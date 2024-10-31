@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TournamentType {
+  SINGLE_ELIMINATION
+  DOUBLE_ELIMINATION
+  ROUND_ROBIN
+  SWISS
+  FREE_FOR_ALL
+}
+
+enum TournamentStatus {
+  PENDING // Турнир ожидает начала
+  IN_PROGRESS // Турнир в процессе
+  COMPLETED // Турнир завершен
+}
+
+enum Winner {
+  opponentA
+  opponentB
+  Draw
+}
+
+model User {
+  id          Int          @id @default(autoincrement())
+  name        String
+  email       String       @unique
+  tournaments Tournament[] // Связь с турнирами (один ко многим)
+}
+
+// Модель Tournament — турнир, созданный пользователем
+model Tournament {
+  id                Int              @id @default(autoincrement())
+  name              String
+  type              TournamentType // Тип турнира
+  status            TournamentStatus @default(PENDING) // Статус турнира
+  createdAt         DateTime         @default(now())
+  creator           User             @relation(fields: [creatorId], references: [id])
+  creatorId         Int
+  totalParticipants Int
+  participants      Participant[] // Участники турнира
+  matches           Match[] // Матчи турнира
+}
+
+// Модель Participant — участник турнира
+model Participant {
+  id           Int        @id @default(autoincrement())
+  name         String
+  score        Int        @default(0) // Общее количество очков участника
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  tournamentId Int
+  matchesAsA   Match[]    @relation("OpponentA") // Матчи, где участник — Opponent A
+  matchesAsB   Match[]    @relation("OpponentB") // Матчи, где участник — Opponent B
+}
+
+// Модель Match — матч между двумя участниками
+model Match {
+  id           Int         @id @default(autoincrement())
+  tournament   Tournament  @relation(fields: [tournamentId], references: [id])
+  tournamentId Int
+  opponentA    Participant @relation("OpponentA", fields: [opponentAId], references: [id])
+  opponentAId  Int
+  opponentB    Participant @relation("OpponentB", fields: [opponentBId], references: [id])
+  opponentBId  Int
+  date         DateTime?
+  scoreA       Int? // Очки для Opponent A
+  scoreB       Int? // Очки для Opponent B
+  winner       Winner?
+}

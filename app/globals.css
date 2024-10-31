@@ -17,7 +17,7 @@ main {
   padding: 40px 24px;
 }
 
-button, a svg {
+button svg, a svg {
   stroke-width: 1.2;
 }
 

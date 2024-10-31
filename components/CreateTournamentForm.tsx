@@ -1,41 +1,62 @@
 'use client';
 
-import { InferType, object, string } from 'yup';
+import { InferType, mixed, object, string } from 'yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Button } from '@nextui-org/button';
 import { Card, CardBody, CardFooter } from '@nextui-org/card';
 import { FormInput, FormSelect, FormTextarea } from '@/components/FormFields';
-import { Tournament } from '@/constants';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation'
+import { TournamentType } from '@prisma/client';
+import { ClientSideApi } from '@/services/ClientSideApi';
 
 const formSchema = object({
-    name: string().min(2, 'Username must be at least 2 characters.'),
-    type: string().min(2, 'Username must be at least 2 characters.'),
-    participants: string().min(2, 'Username must be at least 2 characters.'),
+    name: string().required().min(2, 'Username must be at least 2 characters.'),
+    type: mixed<TournamentType>().oneOf(Object.values(TournamentType)).required(),
+    participants: string().required().min(2, 'Username must be at least 2 characters.'),
 });
 
-type FormSchema = InferType<typeof formSchema>
+export type CreateTournamentFormSchema = InferType<typeof formSchema>
 
 const TOURNAMENT_TYPES = [
-    { key: Tournament.SingleElimination, label: 'Single Elimination' },
-    { key: Tournament.DoubleElimination, label: 'Double Elimination' },
-    { key: Tournament.RoundRobin, label: 'Round Robin' },
-    { key: Tournament.Swiss, label: 'Swiss' },
-    { key: Tournament.FreeForAll, label: 'Free-for-all' },
+    { key: TournamentType.SINGLE_ELIMINATION, label: 'Single Elimination' },
+    { key: TournamentType.DOUBLE_ELIMINATION, label: 'Double Elimination' },
+    { key: TournamentType.ROUND_ROBIN, label: 'Round Robin' },
+    { key: TournamentType.SWISS, label: 'Swiss' },
+    { key: TournamentType.FREE_FOR_ALL, label: 'Free-for-all' },
 ];
 
 export const CreateTournamentForm = () => {
-    const methods = useForm<FormSchema>({
+    const router = useRouter()
+    const { data } = useSession()
+
+    const methods = useForm<CreateTournamentFormSchema>({
         resolver: yupResolver(formSchema),
         defaultValues: {
             name: '',
-            type: Tournament.RoundRobin,
+            type: TournamentType.ROUND_ROBIN,
             participants: '',
         },
     });
+    const onSubmit = async (values: CreateTournamentFormSchema) => {
+        const creatorId = data?.user.id
 
-    const onSubmit = (values: FormSchema) => {
-        console.log('vals', values);
+        if (!creatorId) {
+            return
+        }
+
+        const participants = values.participants.split('\n')
+
+        const response = await ClientSideApi.createTournament({ ...values, creatorId, participants })
+        const tournamentId = response?.tournamentId
+
+        if (!tournamentId) {
+            return
+        }
+
+        methods.reset()
+        router.push(`/tournaments/${tournamentId}`)
     };
 
     return (
@@ -58,6 +79,7 @@ export const CreateTournamentForm = () => {
                             name="type"
                             options={TOURNAMENT_TYPES}
                             selectProps={{
+                                isDisabled: true,
                                 label: 'Tournament Type',
                                 labelPlacement: 'outside',
                                 placeholder: 'Select tournament type',

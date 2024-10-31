@@ -1,3 +1,6 @@
+
+const participants = ['Alice', 'Bob', 'Charlie', 'David', 'Kostya'];
+
 export const generateRoundRobin = (participants: Array<string>): Array<Array<Array<string>>> => {
     const numPlayers = participants.length;
 

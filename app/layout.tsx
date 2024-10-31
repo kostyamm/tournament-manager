@@ -2,8 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { Montserrat } from 'next/font/google';
 import './globals.css';
-import { UiProvider } from '@/contexts/UiProvider';
-import { Header } from '@/components/Header';
+import { AuthProvider, SWRProvider, ThemeProvider } from '@/contexts';
 
 const montserrat = Montserrat({
     weight: ['400', '500', '600', '700', '800', '900'],
@@ -22,12 +21,13 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode;
     return (
         <html lang="en">
         <body className={`${montserrat.className} dark`}>
-        <UiProvider>
-            <Header />
-            <main>
-                {children}
-            </main>
-        </UiProvider>
+        <AuthProvider>
+            <SWRProvider>
+                <ThemeProvider>
+                    {children}
+                </ThemeProvider>
+            </SWRProvider>
+        </AuthProvider>
         </body>
         </html>
     );

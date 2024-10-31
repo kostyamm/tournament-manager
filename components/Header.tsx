@@ -12,8 +12,11 @@ import {
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { Trophy } from 'lucide-react';
+import { LogOut, Trophy } from 'lucide-react';
 import { Button } from '@nextui-org/button';
+import { signOut } from 'next-auth/react';
+import { NavbarProps } from '@nextui-org/react';
+import { cn } from '@/lib/utils';
 
 const menuItems = [
     {
@@ -41,6 +44,7 @@ export const Header = () => {
         <Navbar
             maxWidth="xl"
             isMenuOpen={isMenuOpen}
+            classNames={havbarClassNames}
             onMenuOpenChange={onToggle}
             isBordered
             isBlurred
@@ -51,18 +55,24 @@ export const Header = () => {
                     <HeaderLogo />
                 </NavbarBrand>
             </NavbarContent>
-            <NavbarContent className="hidden sm:flex gap-3" justify="center">
+            <NavbarContent className="hidden sm:flex gap-6" justify="center">
                 {menuItems.map(({ href, name }, index) => (
                     <NavbarItem key={index} isActive={checkActive(href)}>
-                        <Button
-                            as={Link}
+                        <Link
                             href={href}
-                            size="sm"
-                            color={checkActive(href) ? 'primary' : 'default'}
-                            className="font-medium text-sm"
-                        >{name}</Button>
+                            className={cn(
+                                'font-medium text-sm',
+                                checkActive(href) && 'text-primary'
+                            )}
+                        >{name}</Link>
                     </NavbarItem>
                 ))}
+                <NavbarItem>
+                    <Button onClick={() => signOut()} size="sm" variant="faded">
+                        <LogOut size={18}/>
+                        Log out
+                    </Button>
+                </NavbarItem>
             </NavbarContent>
             <NavbarMenu>
                 {menuItems.map(({ href, name }, index) => (
@@ -85,3 +95,20 @@ const HeaderLogo = () => {
         </div>
     );
 };
+
+const havbarClassNames: NavbarProps['classNames'] = {
+    item: [
+        "flex",
+        "relative",
+        "h-full",
+        "items-center",
+        "data-[active=true]:after:content-['']",
+        "data-[active=true]:after:absolute",
+        "data-[active=true]:after:bottom-0",
+        "data-[active=true]:after:left-0",
+        "data-[active=true]:after:right-0",
+        "data-[active=true]:after:h-[2px]",
+        "data-[active=true]:after:rounded-[2px]",
+        "data-[active=true]:after:bg-primary",
+    ],
+}
