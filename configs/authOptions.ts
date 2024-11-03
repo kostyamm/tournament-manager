@@ -5,7 +5,7 @@ import {
     GetServerSidePropsContext,
     NextApiRequest,
     NextApiResponse,
-} from 'next'
+} from 'next';
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -14,16 +14,17 @@ export const authOptions: NextAuthOptions = {
             clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
         }),
     ],
+
+    pages: {
+        signIn: '/login',
+    },
     session: {
         strategy: 'jwt',
         maxAge: 30 * 24 * 60 * 60,
     },
     callbacks: {
-        jwt: async ({ token, account }) => {
-            if (account && account.access_token) {
-                token.accessToken = account.access_token
-            }
-            return token
+        redirect: async ({ url, baseUrl }) => {
+            return url.startsWith(baseUrl) ? url : baseUrl;
         },
         signIn: async ({ user }) => {
             const { name, email } = user;
@@ -64,6 +65,6 @@ export const auth = (  // <-- use this function to access the jwt from React com
         | [GetServerSidePropsContext['req'], GetServerSidePropsContext['res']]
         | [NextApiRequest, NextApiResponse]
         | []
-): Promise<Session & { token: string } | null > => {
-    return getServerSession(...args, authOptions)
-}
+): Promise<Session & { token: string } | null> => {
+    return getServerSession(...args, authOptions);
+};
