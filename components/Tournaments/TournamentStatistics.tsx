@@ -2,48 +2,34 @@
 
 import { TournamentResponse } from '@/prisma/prisma-types';
 import { formatString } from '@/helpers/formatString';
-import { useSWRTournament } from '@/services/useSWRTournament';
-import { cn } from '@/lib/utils';
+import { useSWRTournamentById } from '@/services/useSWRTournaments';
 import { Participant, TournamentStatus } from '@prisma/client';
 import { Fragment } from 'react';
 import { useDisclosure } from '@nextui-org/react';
 import { Button } from '@nextui-org/button';
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@nextui-org/modal';
 import { TextTruncate } from '@/components/TextTruncate';
+import { BookOpenText } from 'lucide-react';
 
-export const TournamentStatistics = ({ tournament, className }: {
-    tournament: TournamentResponse,
-    className?: string
-}) => {
-    const { data } = useSWRTournament(tournament.id, tournament);
+export const TournamentStatistics = ({ tournament }: { tournament: TournamentResponse }) => {
+    const { data } = useSWRTournamentById(tournament.id, tournament);
     const { participants, status } = data;
-
-    return (
-        <Fragment>
-            <div className={cn(
-                'md:sticky top-[104px] h-fit',
-                className,
-            )}>
-                <TournamentStatisticsModal participants={participants} status={status} className="flex md:hidden" />
-                <TournamentStatisticsContent participants={participants} status={status} className="hidden md:flex" />
-            </div>
-        </Fragment>
-    );
-};
-
-const TournamentStatisticsModal = ({ participants, status, className }: {
-    participants: Array<Participant>;
-    status: TournamentStatus;
-    className?: string;
-}) => {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     return (
         <Fragment>
-            <Button onPress={onOpen} variant="shadow" color="primary" fullWidth className={cn('text-md', className)}>
-                Statistics
+            <Button onPress={onOpen} fullWidth variant="shadow" color="primary" className="text-md">
+                <BookOpenText />
+                Stats
             </Button>
-            <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="bottom-center" backdrop="blur" size="2xl">
+            <Modal
+                scrollBehavior="inside"
+                isOpen={isOpen}
+                onOpenChange={onOpenChange}
+                placement="bottom-center"
+                backdrop="blur"
+                size="2xl"
+            >
                 <ModalContent>
                     {(onClose) => (
                         <>
@@ -64,13 +50,12 @@ const TournamentStatisticsModal = ({ participants, status, className }: {
     );
 };
 
-const TournamentStatisticsContent = ({ participants, status, className }: {
+const TournamentStatisticsContent = ({ participants, status }: {
     participants: Array<Participant>;
     status: TournamentStatus;
-    className?: string;
 }) => {
     return (
-        <div className={cn('flex flex-col gap-4', className)}>
+        <div className="flex flex-col gap-4">
             <section className="">
                 <h2 className="text-foreground text-medium mb-2">Status</h2>
                 <p className="text-foreground text-primary">
@@ -85,7 +70,7 @@ const TournamentStatisticsContent = ({ participants, status, className }: {
                             key={id}
                             className="flex justify-between not-last:border-b border-dotted border-stone-600 pb-2"
                         >
-                            <TextTruncate text={name} maxWidth={240} className="first-letter:uppercase"/>
+                            <TextTruncate text={name} maxWidth={240} className="first-letter:uppercase" />
                             <p>{score}</p>
                         </div>
                     ))}

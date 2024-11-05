@@ -1,17 +1,9 @@
-'use client';
-
-import { Button } from '@nextui-org/button';
-import { signIn, SignInOptions } from 'next-auth/react';
+import { AuthButton } from '@/components/AuthButton';
 
 export default function Login({ searchParams }: { searchParams?: { callbackUrl: string } }) {
-    const handleAuth = () => {
-        const signInOptions: SignInOptions = {
-            redirect: true,
-            callbackUrl: searchParams?.callbackUrl || '/tournaments',
-        };
-
-        signIn('google', signInOptions);
-    };
-
-    return <Button onClick={handleAuth}>Sign In</Button>;
+    return (
+        <div className="h-dvh flex items-center justify-center">
+            <AuthButton callbackUrl={searchParams?.callbackUrl} />
+        </div>
+    );
 };

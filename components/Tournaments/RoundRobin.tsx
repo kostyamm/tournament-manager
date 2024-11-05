@@ -1,13 +1,13 @@
 'use client';
 
 import { TournamentResponse } from '@/prisma/prisma-types';
-import { useSWRTournament } from '@/services/useSWRTournament';
+import { useSWRTournamentById } from '@/services/useSWRTournaments';
 import { ClientSideApi } from '@/services/ClientSideApi';
 import { Winner } from '@prisma/client';
 import { RoundRobinMatch } from '@/components/Tournaments/RoundRobinMatch';
 
 export const RoundRobin = ({ tournament }: { tournament: TournamentResponse }) => {
-    const { data, mutate } = useSWRTournament(tournament.id, tournament);
+    const { data, mutate } = useSWRTournamentById(tournament.id, tournament);
 
     const handleWinner = async (matchId: number, winner: Winner) => {
         const result = await ClientSideApi.updateTournamentMatch(matchId, {

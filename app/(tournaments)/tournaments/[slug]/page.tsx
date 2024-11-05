@@ -6,6 +6,7 @@ import { TournamentStatistics } from '@/components/Tournaments/TournamentStatist
 import { fetcher } from '@/services/fetcher';
 import { headers } from 'next/headers';
 import { formatString } from '@/helpers/formatString';
+import { TournamentActions } from '@/components/Tournaments/TournamentActions';
 
 export default async function Tournament(props: { params: Promise<{ slug: string }> }) {
     const params = await props.params;
@@ -18,13 +19,15 @@ export default async function Tournament(props: { params: Promise<{ slug: string
 
     return (
         <Fragment>
-            <PageTitle title={tournament.name} >
-                <div className="text-lg text-foreground">{formatString(tournament.type)}</div>
+            <PageTitle title={tournament.name} description={formatString(tournament.type)}>
+                <div className="flex items-center gap-4 ml-auto">
+                    <TournamentStatistics tournament={tournament} />
+                    <TournamentActions tournament={tournament} />
+                </div>
             </PageTitle>
 
-            <div className="grid md:grid-cols-2 gap-8 md:gap-16">
+            <div className="m-auto md:w-3/5">
                 <RoundRobin tournament={tournament} />
-                <TournamentStatistics tournament={tournament} className="order-[-1] md:order-1" />
             </div>
         </Fragment>
     );

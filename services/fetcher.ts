@@ -2,8 +2,8 @@ export const fetcher = async (path: string, options: RequestInit = {}) => {
     const url = process.env.NEXT_PUBLIC_API_URL + path
     const fetchOptions = {
         headers: {
-            'Content-Type': 'application/json',
             ...options.headers,
+            'Content-Type': 'application/json',
         },
         ...options,
     }

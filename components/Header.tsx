@@ -12,10 +12,11 @@ import {
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { Crown, LogOut, PlusCircle, Trophy } from 'lucide-react';
+import { Crown, LogOut, PlusCircle } from 'lucide-react';
 import { Button } from '@nextui-org/button';
 import { signOut } from 'next-auth/react';
 import { NavbarProps } from '@nextui-org/react';
+import { HeaderLogo } from '@/components/HeaderLogo';
 import { cn } from '@/lib/utils';
 
 const menuItems = [
@@ -102,16 +103,6 @@ export const Header = () => {
                 </NavbarMenuItem>
             </NavbarMenu>
         </Navbar>
-    );
-};
-
-const HeaderLogo = () => {
-    return (
-        <Link href="/" className="text-white flex items-center gap-2">
-            <Trophy strokeWidth={1.2} />
-
-            Tournament Manager
-        </Link>
     );
 };
 

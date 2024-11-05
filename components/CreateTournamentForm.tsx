@@ -40,6 +40,7 @@ export const CreateTournamentForm = () => {
             participants: '',
         },
     });
+
     const onSubmit = async (values: CreateTournamentFormSchema) => {
         const creatorId = data?.user.id;
 

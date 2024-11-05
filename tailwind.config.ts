@@ -31,7 +31,7 @@ const config: Config = {
                 radius: {
                     small: '8px',
                     medium: '12px',
-                    large: '20px',
+                    large: '12px',
                 },
                 borderWidth: {
                     small: '1px',

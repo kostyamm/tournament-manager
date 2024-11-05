@@ -1,28 +1,26 @@
+'use client'
+
 import { Card, CardBody, CardHeader } from '@nextui-org/card';
 import Link from 'next/link';
 import { Dot } from 'lucide-react';
 import { FC } from 'react';
 import { formatString } from '@/helpers/formatString';
+import { useSWRTournaments } from '@/services/useSWRTournaments';
+import { TournamentResponse } from '@/prisma/prisma-types';
 
-type TournamentsItem = {
-    id: number;
-    name: string;
-    type: string;
-    status: string;
-    createdAt: Date;
-    totalParticipants: number;
-}
-type TournamentsList = { tournaments: Array<TournamentsItem> }
+type TournamentsList = { tournaments: Array<TournamentResponse> }
 
 export const TournamentsList: FC<TournamentsList> = ({ tournaments }) => {
+    const { data } = useSWRTournaments(tournaments)
+
     return (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {tournaments.map((tournament) => <TournamentsItem key={tournament.id} {...tournament} />)}
+            {data.map((tournament) => <TournamentsItem key={tournament.id} {...tournament} />)}
         </div>
     );
 };
 
-const TournamentsItem: FC<TournamentsItem> = ({ id, name, type, totalParticipants, status, createdAt }) => {
+const TournamentsItem: FC<TournamentResponse> = ({ id, name, type, totalParticipants, status, createdAt }) => {
     return (
         <Card as={Link} href={`/tournaments/${id}`} className="p-3" shadow="lg">
             <CardHeader className="flex flex-col items-start gap-2">
