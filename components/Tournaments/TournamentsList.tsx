@@ -14,7 +14,7 @@ type TournamentsItem = {
 }
 type TournamentsList = { tournaments: Array<TournamentsItem> }
 
-export const TournamentsList: FC<TournamentsList>    = ({ tournaments }) => {
+export const TournamentsList: FC<TournamentsList> = ({ tournaments }) => {
     return (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {tournaments.map((tournament) => <TournamentsItem key={tournament.id} {...tournament} />)}
@@ -24,10 +24,14 @@ export const TournamentsList: FC<TournamentsList>    = ({ tournaments }) => {
 
 const TournamentsItem: FC<TournamentsItem> = ({ id, name, type, totalParticipants, status, createdAt }) => {
     return (
-        <Card as={Link} href={`/tournaments/${id}`} className="p-3">
+        <Card as={Link} href={`/tournaments/${id}`} className="p-3" shadow="lg">
             <CardHeader className="flex flex-col items-start gap-2">
-                <h2>{name}</h2>
-                <p className="flex flex-wrap items-center text-gray-400">{formatString(type)} <Dot /> {totalParticipants} participants</p>
+                <h2 className="truncate w-full">{name}</h2>
+                <p className="flex flex-wrap items-center text-stone-400">
+                    {formatString(type)}
+                    <Dot />
+                    {totalParticipants} participants
+                </p>
             </CardHeader>
             <CardBody className="flex flex-col gap-2">
                 <div className="flex justify-between">
@@ -36,7 +40,7 @@ const TournamentsItem: FC<TournamentsItem> = ({ id, name, type, totalParticipant
                 </div>
                 <div className="flex justify-between">
                     <div>Created:</div>
-                    <div>{new Date(createdAt).toLocaleDateString()}</div>
+                    <div>{new Date(createdAt).toDateString()}</div>
                 </div>
             </CardBody>
         </Card>

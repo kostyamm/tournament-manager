@@ -14,7 +14,8 @@ main {
   width: 100%;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 40px 24px;
+
+  @apply py-8 px-4 md:py-10 md:px-6;
 }
 
 button svg, a svg {
@@ -28,7 +29,7 @@ button svg, a svg {
 }
 
 h1 {
-  @apply text-4xl font-bold;
+  @apply text-2xl md:text-4xl font-bold;
 }
 
 h2 {
@@ -40,7 +41,7 @@ h3 {
 }
 
 p {
-  @apply text-[16px] text-gray-100;
+  @apply text-[16px] text-stone-100;
 }
 
 a:hover {

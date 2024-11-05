@@ -1,22 +1,16 @@
-import { GenerateTournament } from '@/prisma/prisma-types';
+import { GenerateTournament, TournamentResponse } from '@/prisma/prisma-types';
 import { fetcher } from '@/services/fetcher';
-import { Match, Tournament } from '@prisma/client';
+import { Match } from '@prisma/client';
 
 const createTournament: GenerateTournament = async (data) => {
-    return await fetcher('/tournaments', {
+    return await fetcher('/tournaments/create', {
         method: 'POST',
         body: JSON.stringify(data),
     });
 };
 
-const updateTournament = async (id: number, data: Partial<Tournament>): Promise<Partial<Tournament>> => {
-    return await fetcher(`/tournaments/${id}`, {
-        method: 'POST',
-        body: JSON.stringify(data),
-    });
-};
 
-const updateMatch = async (id: number, data: Partial<Match>): Promise<Partial<Match>> => {
+const updateTournamentMatch = async (id: number, data: Partial<Match>): Promise<TournamentResponse> => {
     return await fetcher(`/tournaments/match/${id}`, {
         method: 'POST',
         body: JSON.stringify(data),
@@ -25,6 +19,5 @@ const updateMatch = async (id: number, data: Partial<Match>): Promise<Partial<Ma
 
 export const ClientSideApi = {
     createTournament,
-    updateTournament,
-    updateMatch
+    updateTournamentMatch,
 };

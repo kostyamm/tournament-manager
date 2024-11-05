@@ -25,9 +25,9 @@ export default async function Tournaments() {
 const TournamentsTitle = () => {
     return (
         <PageTitle title="Tournaments">
-            <Button as={Link} href="/tournaments/create">
+            <Button as={Link} href="/tournaments/create" variant="shadow" color="primary">
                 <CirclePlus />
-                Create Tournament
+                Create
             </Button>
         </PageTitle>
     );

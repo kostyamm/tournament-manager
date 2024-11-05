@@ -2,16 +2,15 @@ import { prisma } from '@/prisma/prisma-client';
 import { TournamentType } from '@prisma/client';
 import { GenerateTournament, GetTournamentById } from '@/prisma/prisma-types';
 
-export const getTournaments = async () => {
-    return prisma.tournament.findMany();
-};
-
 export const getTournamentById: GetTournamentById = async (tournamentId) => {
     return prisma.tournament.findUnique({
         where: { id: tournamentId },
         include: {
-            participants: true,
+            participants: {
+                orderBy: { id: 'asc' },
+            },
             matches: {
+                orderBy: { id: 'asc' },
                 include: { opponentA: true, opponentB: true },
             },
         },

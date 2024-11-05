@@ -11,14 +11,15 @@ export type GenerateTournament = (props: GenerateTournamentProps) => Promise<{
     tournamentId: number
 } | undefined>
 
+export type TournamentMatch = Match & {
+    opponentA: Participant;
+    opponentB: Participant;
+}
 
-export type TournamentWithMatches = Tournament & {
+export type TournamentResponse = Tournament & {
     participants: Array<Participant>;
-    matches: Array<Match & {
-        opponentA: Participant;
-        opponentB: Participant;
-    }>;
+    matches: Array<TournamentMatch>;
 };
 
-export type GetTournamentById = (tournamentId: number) => Promise<TournamentWithMatches | null>
+export type GetTournamentById = (tournamentId: number) => Promise<TournamentResponse | null>
 

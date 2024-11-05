@@ -1,45 +1,14 @@
-import { generateTournament, getTournaments } from '@/prisma/prisma-actions';
-import { getServerSession } from 'next-auth';
+import { prisma } from '@/prisma/prisma-client';
 
-export async function GET(request: Request) {
-    const session = await getServerSession()
-    // const token =  await getToken({ req })
-
-    if (!session) {
-        return Response.json(
-            { message: "Unauthorized" },
-            { status: 401 }
-        );
-    }
-
+export async function GET() {
     try {
-        const data = await getTournaments()
+        const data = await prisma.tournament.findMany({
+            orderBy: { createdAt: 'desc' },
+        });
 
-        return Response.json(data)
+        return Response.json(data);
     } catch (e) {
-        console.log(e)
-        return new Response("fail")
-    }
-}
-
-export async function POST(request: Request) {
-    const session = await getServerSession()
-
-    if (!session) {
-        return Response.json(
-            { message: "Unauthorized" },
-            { status: 401 }
-        );
-    }
-
-    try {
-        const body = await request.json()
-
-        const data = await generateTournament(body)
-
-        return Response.json(data)
-    } catch (e) {
-        console.log(e)
-        return new Response("fail")
+        console.log(e);
+        return new Response('fail');
     }
 }

@@ -7,9 +7,10 @@ import { Button } from '@nextui-org/button';
 import { Card, CardBody, CardFooter } from '@nextui-org/card';
 import { FormInput, FormSelect, FormTextarea } from '@/components/FormFields';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation';
 import { TournamentType } from '@prisma/client';
 import { ClientSideApi } from '@/services/ClientSideApi';
+import { PageTitle } from '@/components/PageTitle';
 
 const formSchema = object({
     name: string().required().min(2, 'Username must be at least 2 characters.'),
@@ -28,8 +29,8 @@ const TOURNAMENT_TYPES = [
 ];
 
 export const CreateTournamentForm = () => {
-    const router = useRouter()
-    const { data } = useSession()
+    const router = useRouter();
+    const { data } = useSession();
 
     const methods = useForm<CreateTournamentFormSchema>({
         resolver: yupResolver(formSchema),
@@ -40,29 +41,29 @@ export const CreateTournamentForm = () => {
         },
     });
     const onSubmit = async (values: CreateTournamentFormSchema) => {
-        const creatorId = data?.user.id
+        const creatorId = data?.user.id;
 
         if (!creatorId) {
-            return
+            return;
         }
 
-        const participants = values.participants.split('\n')
+        const participants = values.participants.split('\n');
 
-        const response = await ClientSideApi.createTournament({ ...values, creatorId, participants })
-        const tournamentId = response?.tournamentId
+        const response = await ClientSideApi.createTournament({ ...values, creatorId, participants });
+        const tournamentId = response?.tournamentId;
 
         if (!tournamentId) {
-            return
+            return;
         }
 
-        methods.reset()
-        router.push(`/tournaments/${tournamentId}`)
+        methods.reset();
+        router.push(`/tournaments/${tournamentId}`);
     };
 
     return (
         <FormProvider {...methods}>
             <form onSubmit={methods.handleSubmit(onSubmit)} className="m-auto md:w-3/5">
-                <h1 className="pb-10">New Tournament</h1>
+                <PageTitle title="New Tournament" />
                 <Card className="p-3 gap-4">
                     <CardBody className="flex flex-col gap-4">
                         <FormInput
@@ -99,8 +100,8 @@ export const CreateTournamentForm = () => {
                         />
                     </CardBody>
 
-                    <CardFooter>
-                        <Button type="submit" color="primary" fullWidth>Create</Button>
+                    <CardFooter className="pb-6">
+                        <Button type="submit" variant="shadow" color="primary" fullWidth>Create</Button>
                     </CardFooter>
                 </Card>
             </form>

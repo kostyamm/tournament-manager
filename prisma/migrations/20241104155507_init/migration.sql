@@ -4,6 +4,9 @@ CREATE TYPE "TournamentType" AS ENUM ('SINGLE_ELIMINATION', 'DOUBLE_ELIMINATION'
 -- CreateEnum
 CREATE TYPE "TournamentStatus" AS ENUM ('PENDING', 'IN_PROGRESS', 'COMPLETED');
 
+-- CreateEnum
+CREATE TYPE "Winner" AS ENUM ('opponentA', 'opponentB', 'Draw');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
@@ -30,6 +33,7 @@ CREATE TABLE "Tournament" (
 CREATE TABLE "Participant" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
+    "score" INTEGER NOT NULL DEFAULT 0,
     "tournamentId" INTEGER NOT NULL,
 
     CONSTRAINT "Participant_pkey" PRIMARY KEY ("id")
@@ -44,7 +48,7 @@ CREATE TABLE "Match" (
     "date" TIMESTAMP(3),
     "scoreA" INTEGER,
     "scoreB" INTEGER,
-    "isFinished" BOOLEAN NOT NULL DEFAULT false,
+    "winner" "Winner",
 
     CONSTRAINT "Match_pkey" PRIMARY KEY ("id")
 );
