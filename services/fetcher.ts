@@ -1,4 +1,4 @@
-export const fetcher = async (path: string, options: RequestInit = {}) => {
+export const fetcher = async <T = unknown>(path: string, options: RequestInit = {}): Promise<T> => {
     const url = process.env.NEXT_PUBLIC_API_URL + path
     const fetchOptions = {
         headers: {
@@ -15,7 +15,7 @@ export const fetcher = async (path: string, options: RequestInit = {}) => {
             throw new Error(`Error: ${response.status} - ${response.statusText}`);
         }
 
-        return await response.json();
+        return await response.json() as T;
     } catch (error) {
         console.error('Fetch error:', error);
         throw error;

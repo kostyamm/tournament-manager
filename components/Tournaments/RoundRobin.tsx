@@ -1,13 +1,15 @@
 'use client';
 
-import { TournamentResponse } from '@/prisma/prisma-types';
-import { useSWRTournamentById } from '@/services/useSWRTournaments';
 import { ClientSideApi } from '@/services/ClientSideApi';
 import { Winner } from '@prisma/client';
 import { RoundRobinMatch } from '@/components/Tournaments/RoundRobinMatch';
+import { TournamentResponse } from '@/prisma/prisma-types';
+import { useParams } from 'next/navigation';
+import useSWR from 'swr';
 
-export const RoundRobin = ({ tournament }: { tournament: TournamentResponse }) => {
-    const { data, mutate } = useSWRTournamentById(tournament.id, tournament);
+export const RoundRobin = () => {
+    const { slug } = useParams<{ slug: string }>()
+    const { data, mutate } = useSWR<TournamentResponse>(`/tournaments/${slug}`);
 
     const handleWinner = async (matchId: number, winner: Winner) => {
         const result = await ClientSideApi.updateTournamentMatch(matchId, {
@@ -17,6 +19,10 @@ export const RoundRobin = ({ tournament }: { tournament: TournamentResponse }) =
 
         await mutate(result);
     };
+
+    if (!data) {
+        return null
+    }
 
     return (
         <div className="flex flex-col gap-8">

@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import { Montserrat } from 'next/font/google';
 import './globals.css';
-import { AuthProvider, SWRProvider, ThemeProvider } from '@/contexts';
+import { AuthProvider, ThemeProvider } from '@/contexts';
 
 const montserrat = Montserrat({
     weight: ['400', '500', '600', '700', '800', '900'],
@@ -29,11 +29,9 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode;
         <html lang="en">
         <body className={`${montserrat.className} dark`}>
         <AuthProvider>
-            <SWRProvider>
-                <ThemeProvider>
-                    {children}
-                </ThemeProvider>
-            </SWRProvider>
+            <ThemeProvider>
+                {children}
+            </ThemeProvider>
         </AuthProvider>
         </body>
         </html>

@@ -7,9 +7,10 @@ import { NoTournaments, TournamentsList } from '@/components/Tournaments';
 
 import { headers } from 'next/headers';
 import { fetcher } from '@/services/fetcher';
+import { TournamentResponse } from '@/prisma/prisma-types';
 
 export default async function Tournaments() {
-    const tournaments = await fetcher('/tournaments', { headers: headers() });
+    const tournaments = await fetcher<Array<TournamentResponse>>('/tournaments', { headers: headers() });
 
     return (
         <Fragment>

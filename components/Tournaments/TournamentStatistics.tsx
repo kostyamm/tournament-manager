@@ -1,8 +1,6 @@
 'use client';
 
-import { TournamentResponse } from '@/prisma/prisma-types';
 import { formatString } from '@/helpers/formatString';
-import { useSWRTournamentById } from '@/services/useSWRTournaments';
 import { Participant, TournamentStatus } from '@prisma/client';
 import { Fragment } from 'react';
 import { useDisclosure } from '@nextui-org/react';
@@ -10,11 +8,20 @@ import { Button } from '@nextui-org/button';
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@nextui-org/modal';
 import { TextTruncate } from '@/components/TextTruncate';
 import { BookOpenText } from 'lucide-react';
+import { TournamentResponse } from '@/prisma/prisma-types';
+import { useParams } from 'next/navigation';
+import useSWR from 'swr';
 
-export const TournamentStatistics = ({ tournament }: { tournament: TournamentResponse }) => {
-    const { data } = useSWRTournamentById(tournament.id, tournament);
-    const { participants, status } = data;
+export const TournamentStatistics = () => {
+    const { slug } = useParams<{ slug: string }>()
+    const { data } = useSWR<TournamentResponse>(`/tournaments/${slug}`);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+    if (!data) {
+        return null
+    }
+
+    const { participants, status } = data;
 
     return (
         <Fragment>

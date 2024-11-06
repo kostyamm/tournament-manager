@@ -1,13 +1,19 @@
 'use client';
 
-import { TournamentResponse } from '@/prisma/prisma-types';
-import { useSWRTournamentById } from '@/services/useSWRTournaments';
 import { Button } from '@nextui-org/button';
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from '@nextui-org/dropdown';
 import { Settings, Trash } from 'lucide-react';
+import { TournamentResponse } from '@/prisma/prisma-types';
+import { useParams } from 'next/navigation';
+import useSWR from 'swr';
 
-export const TournamentActions = ({ tournament }: { tournament: TournamentResponse }) => {
-    const { data } = useSWRTournamentById(tournament.id, tournament);
+export const TournamentActions = () => {
+    const { slug } = useParams<{ slug: string }>()
+    const { data } = useSWR<TournamentResponse>(`/tournaments/${slug}`);
+
+    if (!data) {
+        return null
+    }
 
     return (
         <Dropdown>
