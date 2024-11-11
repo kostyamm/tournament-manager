@@ -13,9 +13,20 @@ import { ClientSideApi } from '@/services/ClientSideApi';
 import { PageTitle } from '@/components/PageTitle';
 
 const formSchema = object({
-    name: string().required().min(2, 'Username must be at least 2 characters.'),
-    type: mixed<TournamentType>().oneOf(Object.values(TournamentType)).required(),
-    participants: string().required().min(2, 'Username must be at least 2 characters.'),
+    name: string().required().min(2, 'Name must be at least 2 characters.').label('Name'),
+    type: mixed<TournamentType>().oneOf(Object.values(TournamentType)).required().label('Type'),
+    participants: string()
+        .required()
+        .test(
+            'is-enough',
+            'Participants must have at least 2 lines',
+            function (values: string | undefined): boolean {
+                const participants = values?.split('\n').filter((v) => !!v);
+
+                return !!participants && participants.length >= 2;
+            },
+        )
+        .label('Participants'),
 });
 
 export type CreateTournamentFormSchema = InferType<typeof formSchema>

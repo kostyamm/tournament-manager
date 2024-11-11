@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { Card, CardBody, CardHeader } from '@nextui-org/card';
 import Link from 'next/link';
@@ -11,7 +11,11 @@ import { TournamentResponse } from '@/prisma/prisma-types';
 type TournamentsList = { tournaments: Array<TournamentResponse> }
 
 export const TournamentsList: FC<TournamentsList> = ({ tournaments }) => {
-    const { data } = useSWRTournaments(tournaments)
+    const { data } = useSWRTournaments(tournaments);
+
+    if (!data) {
+        return null;
+    }
 
     return (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">

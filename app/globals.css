@@ -15,7 +15,7 @@ main {
   max-width: 1280px;
   margin: 0 auto;
 
-  @apply py-8 px-4 md:py-10 md:px-6;
+  @apply pt-8 pb-20 px-4 md:pt-10 md:px-6;
 }
 
 button svg, a svg {

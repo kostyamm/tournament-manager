@@ -59,7 +59,7 @@ model Participant {
   id           Int        @id @default(autoincrement())
   name         String
   score        Int        @default(0) // Общее количество очков участника
-  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId Int
   matchesAsA   Match[]    @relation("OpponentA") // Матчи, где участник — Opponent A
   matchesAsB   Match[]    @relation("OpponentB") // Матчи, где участник — Opponent B
@@ -68,7 +68,7 @@ model Participant {
 // Модель Match — матч между двумя участниками
 model Match {
   id           Int         @id @default(autoincrement())
-  tournament   Tournament  @relation(fields: [tournamentId], references: [id])
+  tournament   Tournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId Int
   opponentA    Participant @relation("OpponentA", fields: [opponentAId], references: [id])
   opponentAId  Int

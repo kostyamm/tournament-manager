@@ -19,8 +19,8 @@ const config: Config = {
     },
     darkMode: 'class',
     plugins: [
-        plugin(function({ addVariant }) {
-            addVariant('not-last', '&:not(:last-child)')
+        plugin(function ({ addVariant }) {
+            addVariant('not-last', '&:not(:last-child)');
         }),
         nextui({
             prefix: 'nextui', // prefix for themes variables
@@ -52,7 +52,7 @@ const config: Config = {
                     },
                 },
             },
-        })
+        }),
     ],
 };
 export default config;
