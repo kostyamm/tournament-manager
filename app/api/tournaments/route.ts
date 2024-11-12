@@ -5,6 +5,7 @@ export async function GET() {
     try {
         const data = await prisma.tournament.findMany({
             orderBy: { createdAt: 'desc' },
+            include: { participants: true }
         });
 
         return Response.json(data);

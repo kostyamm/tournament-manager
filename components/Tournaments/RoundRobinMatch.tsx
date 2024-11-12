@@ -3,7 +3,6 @@ import { Button } from '@nextui-org/button';
 import { TournamentMatch } from '@/prisma/prisma-types';
 import { Crown, Equal, Gem, RefreshCcw } from 'lucide-react';
 import { Winner } from '@prisma/client';
-import { TextTruncate } from '@/components/TextTruncate';
 
 type RoundRobinMatchProps = {
     match: TournamentMatch;
@@ -11,41 +10,45 @@ type RoundRobinMatchProps = {
 }
 export const RoundRobinMatch: FC<RoundRobinMatchProps> = ({ match, handleWinner }) => {
     return (
-        <div className="flex flex-col gap-4 not-last:pb-8 not-last:border-b border-stone-800">
-            <RoundRobinMatchInfo match={match} />
+        <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+                <Opponents match={match} />
+                <OpponentWinner match={match} />
+            </div>
             <RoundRobinMatchActions match={match} handleWinner={handleWinner} />
         </div>
     );
 };
 
-const RoundRobinMatchInfo = ({ match }: { match: TournamentMatch }) => {
+const Opponents = ({ match }: { match: TournamentMatch }) => {
+    const { opponentA, opponentB } = match;
+
+    return (
+        <div className="flex items-center flex-wrap text-lg gap-2">
+            <div className="text-xl">{opponentA.name}</div>
+            <sub className="text-zinc-400 pb-[2px]">vs</sub>
+            <div className="text-xl">{opponentB.name}</div>
+        </div>
+    );
+};
+
+const OpponentWinner = ({ match }: { match: TournamentMatch }) => {
     const { winner } = match;
     const isDraw = winner === Winner.Draw;
 
+    if (!winner) {
+        return <div><sub className="text-zinc-600 pb-[2px]">Haven`t played yet</sub></div>;
+    }
+
     return (
-        <div className="flex flex-col">
-            <div className="flex items-center justify-between flex-wrap gap-2 text-lg">
-                <div className="flex items-center flex-wrap text-lg gap-2">
-                    <TextTruncate text={match.opponentA.name} maxWidth={240} className="first-letter:uppercase" />
-                    <sub className="text-zinc-400 pb-[2px]">vs</sub>
-                    <TextTruncate text={match.opponentB.name} maxWidth={240} className="first-letter:uppercase" />
-                </div>
-                {winner
-                    ? (
-                        <div className="flex items-center gap-1 ">
-                            <span className="text-primary pb-[3px]">
-                                {isDraw ? <Gem size={18} /> : <Crown size={18} />}
-                            </span>
-                            <TextTruncate
-                                text={isDraw ? 'Draw' : `${match[winner].name}`}
-                                maxWidth={240}
-                                className="text-xl text-primary first-letter:uppercase"
-                            />
-                            <sub className="text-zinc-400 pb-[2px]">wins</sub>
-                        </div>
-                    )
-                    : <sub className="text-zinc-600 pb-[2px]">Haven`t played yet</sub>}
+        <div className="flex items-center gap-1">
+            <span className="text-primary pb-[3px]">
+                {isDraw ? <Gem size={18} /> : <Crown size={18} />}
+            </span>
+            <div className="text-xl text-primary">
+                {isDraw ? 'Draw' : `${match[winner].name}`}
             </div>
+            <sub className="text-zinc-600 pb-[2px]">wins</sub>
         </div>
     );
 };
@@ -81,7 +84,7 @@ const RoundRobinMatchActions: FC<RoundRobinMatchProps> = ({ match, handleWinner 
 
     return (
         <Fragment>
-            <div className="flex justify-between gap-6">
+            <div className="flex justify-between gap-4">
                 <Button
                     isLoading={isLoading(Winner.opponentA)}
                     isDisabled={isDisabled(Winner.opponentA)}
@@ -89,7 +92,7 @@ const RoundRobinMatchActions: FC<RoundRobinMatchProps> = ({ match, handleWinner 
                     fullWidth
                     variant="faded"
                 >
-                    <span className="first-letter:uppercase">{match.opponentA.name} Wins</span>
+                    {match.opponentA.name} Wins
                 </Button>
                 <Button
                     isLoading={isLoading(Winner.opponentB)}
@@ -98,7 +101,7 @@ const RoundRobinMatchActions: FC<RoundRobinMatchProps> = ({ match, handleWinner 
                     fullWidth
                     variant="faded"
                 >
-                    <span className="first-letter:uppercase">{match.opponentB.name} Wins</span>
+                    {match.opponentB.name} Wins
                 </Button>
             </div>
             <Button

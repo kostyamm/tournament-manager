@@ -81,12 +81,12 @@ export const Header = () => {
                     </Button>
                 </NavbarItem>
             </NavbarContent>
-            <NavbarMenu className="flex flex-col py-6 px-0 gap-6">
+            <NavbarMenu className="flex flex-col px-0 gap-4">
                 {menuItems.map(({ href, name, Icon }, index) => (
                     <NavbarMenuItem
                         key={index}
                         isActive={checkActive(href)}
-                        className="w-full text-xl pb-6 px-8 border-b border-stone-600"
+                        className="w-full text-xl pb-4 px-4 border-b border-stone-600"
                     >
                         <Link href={href} className="flex items-center gap-4">
                             {Icon}
@@ -95,7 +95,7 @@ export const Header = () => {
                     </NavbarMenuItem>
                 ))}
 
-                <NavbarMenuItem className="px-8">
+                <NavbarMenuItem className="px-4">
                     <Button onClick={() => signOut()} color="danger" variant="shadow">
                         <LogOut size={18} />
                         Log out

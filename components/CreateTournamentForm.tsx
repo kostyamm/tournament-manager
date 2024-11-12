@@ -13,17 +13,29 @@ import { ClientSideApi } from '@/services/ClientSideApi';
 import { PageTitle } from '@/components/PageTitle';
 
 const formSchema = object({
-    name: string().required().min(2, 'Name must be at least 2 characters.').label('Name'),
+    name: string().required().min(2).max(20).label('Name'),
     type: mixed<TournamentType>().oneOf(Object.values(TournamentType)).required().label('Type'),
     participants: string()
         .required()
         .test(
             'is-enough',
             'Participants must have at least 2 lines',
-            function (values: string | undefined): boolean {
+            function (values: string): boolean {
+                const participants = values.split('\n').filter((v) => !!v);
+
+                return participants.length >= 2;
+            },
+        )
+        .test(
+            'is-enough',
+            'Each participant`s name must not be less than 2 and more than 15 characters long',
+            function (values: string): boolean {
                 const participants = values?.split('\n').filter((v) => !!v);
 
-                return !!participants && participants.length >= 2;
+                const notLess = participants.every((v) => v.length >= 2);
+                const notMore = participants.every((v) => v.length <= 15);
+
+                return notLess && notMore;
             },
         )
         .label('Participants'),

@@ -6,11 +6,11 @@ import { Fragment } from 'react';
 import { useDisclosure } from '@nextui-org/react';
 import { Button } from '@nextui-org/button';
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@nextui-org/modal';
-import { TextTruncate } from '@/components/TextTruncate';
 import { BookOpenText } from 'lucide-react';
 import { TournamentResponse } from '@/prisma/prisma-types';
 import { useParams } from 'next/navigation';
 import useSWR from 'swr';
+import { ScoreList } from '@/components/ScoreList';
 
 export const TournamentStatistics = () => {
     const { slug } = useParams<{ slug: string }>()
@@ -25,16 +25,16 @@ export const TournamentStatistics = () => {
 
     return (
         <Fragment>
-            <Button onPress={onOpen} fullWidth variant="shadow" color="primary" className="text-md">
+            <Button onPress={onOpen} variant="shadow" color="primary" isIconOnly>
                 <BookOpenText />
-                Stats
             </Button>
             <Modal
                 scrollBehavior="inside"
                 isOpen={isOpen}
                 onOpenChange={onOpenChange}
-                placement="bottom-center"
+                placement="center"
                 backdrop="blur"
+                className="m-0"
                 size="2xl"
             >
                 <ModalContent>
@@ -63,25 +63,13 @@ const TournamentStatisticsContent = ({ participants, status }: {
 }) => {
     return (
         <div className="flex flex-col gap-4">
-            <section className="">
-                <h2 className="text-foreground text-medium mb-2">Status</h2>
-                <p className="text-foreground text-primary">
-                    {formatString(status)}
-                </p>
+            <section>
+                <h2 className="text-primary text-medium mb-2">Status</h2>
+                <p>{formatString(status)}</p>
             </section>
             <section>
-                <h2 className="text-foreground text-medium mb-2">Participants score</h2>
-                <div className="flex flex-col gap-2">
-                    {participants.map(({ id, name, score }) => (
-                        <div
-                            key={id}
-                            className="flex justify-between not-last:border-b border-dotted border-stone-600 pb-2"
-                        >
-                            <TextTruncate text={name} maxWidth={240} className="first-letter:uppercase" />
-                            <p>{score}</p>
-                        </div>
-                    ))}
-                </div>
+                <h2 className="text-primary text-medium mb-2">Participants score</h2>
+                <ScoreList participants={participants} />
             </section>
         </div>
     );

@@ -28,13 +28,13 @@ export const TournamentActions = () => {
     }
 
     return (
-        <Dropdown>
+        <Dropdown backdrop="blur">
             <DropdownTrigger>
                 <Button isIconOnly variant="bordered">
                     <Settings />
                 </Button>
             </DropdownTrigger>
-            <DropdownMenu>
+            <DropdownMenu variant="faded">
                 <DropdownItem
                     key="delete"
                     className="text-danger"

@@ -1,6 +1,5 @@
-import { Fragment } from 'react';
 import { PageTitle } from '@/components/PageTitle';
-import { RoundRobin } from '@/components/Tournaments';
+import { CompletedTournament, RoundRobin } from '@/components/Tournaments';
 import { notFound } from 'next/navigation';
 import { TournamentStatistics } from '@/components/Tournaments/TournamentStatistics';
 import { fetcher } from '@/services/fetcher';
@@ -18,28 +17,26 @@ export default async function Tournament(props: { params: Promise<{ slug: string
 
     const providerConfig: SWRConfiguration = {
         fallback: {
-            [`/tournaments/${tournamentId}`]: tournament
-        }
-    }
+            [`/tournaments/${tournamentId}`]: tournament,
+        },
+    };
 
     if (!tournament) {
         notFound();
     }
 
     return (
-        <Fragment>
-            <SWRProvider value={providerConfig}>
-                <PageTitle title={tournament.name} description={formatString(tournament.type)}>
-                    <div className="flex items-center gap-4 ml-auto">
-                        <TournamentStatistics />
-                        <TournamentActions />
-                    </div>
-                </PageTitle>
-
-                <div className="m-auto md:w-3/5">
-                    <RoundRobin />
+        <SWRProvider value={providerConfig}>
+            <PageTitle title={tournament.name} description={formatString(tournament.type)}>
+                <div className="flex items-center gap-2 md:gap-4 ml-auto">
+                    <TournamentStatistics />
+                    <TournamentActions />
                 </div>
-            </SWRProvider>
-        </Fragment>
+            </PageTitle>
+
+            <CompletedTournament />
+
+            <RoundRobin />
+        </SWRProvider>
     );
 };

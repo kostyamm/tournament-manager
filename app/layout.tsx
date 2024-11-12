@@ -1,16 +1,15 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
-import { Montserrat } from 'next/font/google';
-import './globals.css';
+import { Nunito } from 'next/font/google';
 import { AuthProvider, SWRProvider, ThemeProvider } from '@/contexts';
+import './globals.css';
 
-const montserrat = Montserrat({
-    weight: ['400', '500', '600', '700', '800', '900'],
-    variable: '--font-montserrat',
+const nunito = Nunito({
+    weight: ['400', '600', '800'],
+    variable: '--font-nunito',
     subsets: ['latin'],
     display: 'swap',
 });
-
 
 export const viewport: Viewport = {
     width: 'device-width',
@@ -27,7 +26,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: ReactNode; }>) {
     return (
         <html lang="en">
-        <body className={`${montserrat.className} dark`}>
+        <body className={`${nunito.className} bg-dot`}>
         <AuthProvider>
             <ThemeProvider>
                 <SWRProvider>
