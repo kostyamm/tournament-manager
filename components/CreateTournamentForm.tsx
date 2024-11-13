@@ -1,16 +1,18 @@
 'use client';
 
 import { InferType, mixed, object, string } from 'yup';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Button } from '@nextui-org/button';
-import { Card, CardBody, CardFooter } from '@nextui-org/card';
-import { FormInput, FormSelect, FormTextarea } from '@/components/FormFields';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { TournamentType } from '@prisma/client';
 import { ClientSideApi } from '@/services/ClientSideApi';
-import { PageTitle } from '@/components/PageTitle';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const formSchema = object({
     name: string().required().min(2).max(20).label('Name'),
@@ -55,7 +57,7 @@ export const CreateTournamentForm = () => {
     const router = useRouter();
     const { data } = useSession();
 
-    const methods = useForm<CreateTournamentFormSchema>({
+    const form = useForm<CreateTournamentFormSchema>({
         resolver: yupResolver(formSchema),
         defaultValues: {
             name: '',
@@ -80,55 +82,75 @@ export const CreateTournamentForm = () => {
             return;
         }
 
-        methods.reset();
+        form.reset();
         router.push(`/tournaments/${tournamentId}`);
     };
 
     return (
-        <FormProvider {...methods}>
-            <form onSubmit={methods.handleSubmit(onSubmit)} className="m-auto md:w-3/5">
-                <PageTitle title="New Tournament" />
-                <Card className="p-3 gap-4">
-                    <CardBody className="flex flex-col gap-4">
-                        <FormInput
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="m-auto md:w-3/5">
+                <Card className="pt-6 border-r-0 md:border-r border-l-0 md:border-l rounded-none md:rounded-lg mx-[-16px] md:mx-0">
+                    <CardContent className="flex flex-col gap-4 px-4 md:px-6">
+                        <FormField
                             name="name"
-                            inputProps={{
-                                label: 'Tournament Name',
-                                labelPlacement: 'outside',
-                                placeholder: 'Some name',
-                                variant: 'bordered',
-                            }}
+                            control={form.control}
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Tournament Name</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Some name" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
                         />
-
-                        <FormSelect
+                        <FormField
+                            control={form.control}
                             name="type"
-                            options={TOURNAMENT_TYPES}
-                            selectProps={{
-                                isDisabled: true,
-                                label: 'Tournament Type',
-                                labelPlacement: 'outside',
-                                placeholder: 'Select tournament type',
-                                variant: 'bordered',
-                                selectionMode: 'single',
-                            }}
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Tournament Type</FormLabel>
+                                    <Select disabled onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select tournament type" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {TOURNAMENT_TYPES.map(({ key, label }) => (
+                                                <SelectItem key={key} value={key}>{label}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
                         />
-
-                        <FormTextarea
+                        <FormField
                             name="participants"
-                            textareaProps={{
-                                label: 'Participants (one per line)',
-                                labelPlacement: 'outside',
-                                placeholder: 'John Doe Jane Smith ...',
-                                variant: 'bordered',
-                            }}
+                            control={form.control}
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Participants (one per line)</FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            rows={6}
+                                            placeholder="John Doe Jane Smith ..."
+                                            className="resize-none"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
                         />
-                    </CardBody>
+                    </CardContent>
 
-                    <CardFooter className="pb-6">
-                        <Button type="submit" variant="shadow" color="primary" fullWidth>Create</Button>
+                    <CardFooter className="pb-6 px-4 md:px-6">
+                        <Button type="submit">Create</Button>
                     </CardFooter>
                 </Card>
             </form>
-        </FormProvider>
+        </Form>
     );
 };

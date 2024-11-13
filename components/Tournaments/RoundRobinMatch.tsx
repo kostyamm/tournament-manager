@@ -1,7 +1,7 @@
 import { FC, Fragment, useState } from 'react';
-import { Button } from '@nextui-org/button';
+import { Button } from '@/components/ui/button';
 import { TournamentMatch } from '@/prisma/prisma-types';
-import { Crown, Equal, Gem, RefreshCcw } from 'lucide-react';
+import { Crown, Equal, Gem, Loader2, RefreshCcw } from 'lucide-react';
 import { Winner } from '@prisma/client';
 
 type RoundRobinMatchProps = {
@@ -73,7 +73,7 @@ const RoundRobinMatchActions: FC<RoundRobinMatchProps> = ({ match, handleWinner 
         return (
             <Button
                 onClick={() => setCanChangeWinner(true)}
-                variant="bordered"
+                variant="outline"
                 className="text-zinc-400"
             >
                 <RefreshCcw size={18} />
@@ -86,31 +86,31 @@ const RoundRobinMatchActions: FC<RoundRobinMatchProps> = ({ match, handleWinner 
         <Fragment>
             <div className="flex justify-between gap-4">
                 <Button
-                    isLoading={isLoading(Winner.opponentA)}
-                    isDisabled={isDisabled(Winner.opponentA)}
+                    disabled={isDisabled(Winner.opponentA)}
                     onClick={() => processWinner(Winner.opponentA)}
-                    fullWidth
-                    variant="faded"
+                    variant="secondary"
                 >
+                    {isLoading(Winner.opponentA) && <Loader2 className="animate-spin" />}
                     {match.opponentA.name} Wins
                 </Button>
                 <Button
-                    isLoading={isLoading(Winner.opponentB)}
-                    isDisabled={isDisabled(Winner.opponentB)}
+                    disabled={isDisabled(Winner.opponentB)}
                     onClick={() => processWinner(Winner.opponentB)}
-                    fullWidth
-                    variant="faded"
+                    variant="secondary"
                 >
+                    {isLoading(Winner.opponentB) && <Loader2 className="animate-spin" />}
                     {match.opponentB.name} Wins
                 </Button>
             </div>
             <Button
-                isLoading={isLoading(Winner.Draw)}
-                isDisabled={isDisabled(Winner.Draw)}
+                disabled={isDisabled(Winner.Draw)}
                 onClick={() => processWinner(Winner.Draw)}
-                variant="bordered"
+                variant="outline"
             >
-                {!isLoading(Winner.Draw) && <Equal />}
+                {isLoading(Winner.Draw)
+                    ? <Loader2 className="animate-spin" />
+                    : <Equal />
+                }
                 Draw
             </Button>
         </Fragment>

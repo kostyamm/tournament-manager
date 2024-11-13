@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import { Nunito } from 'next/font/google';
-import { AuthProvider, SWRProvider, ThemeProvider } from '@/contexts';
+import { AuthProvider, SWRProvider } from '@/contexts';
 import './globals.css';
 
 const nunito = Nunito({
@@ -26,13 +26,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: ReactNode; }>) {
     return (
         <html lang="en">
-        <body className={`${nunito.className} bg-dot`}>
+        <body className={`${nunito.className} bg-dot dark`}>
         <AuthProvider>
-            <ThemeProvider>
-                <SWRProvider>
-                    {children}
-                </SWRProvider>
-            </ThemeProvider>
+            <SWRProvider>
+                {children}
+            </SWRProvider>
         </AuthProvider>
         </body>
         </html>

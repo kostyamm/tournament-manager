@@ -1,7 +1,6 @@
 'use client';
 
-import { Card } from '@nextui-org/card';
-import Link from 'next/link';
+import { Card } from '@/components/ui/card';
 import { Dot } from 'lucide-react';
 import { FC } from 'react';
 import { formatString } from '@/helpers/formatString';
@@ -11,6 +10,8 @@ import { Participant, TournamentStatus } from '@prisma/client';
 import { formatDate } from '@/helpers/formatDate';
 import { getTournamentLeaders } from '@/helpers/leaders';
 import { ScoreList } from '@/components/ScoreList';
+import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 type TournamentsList = { tournaments: Array<TournamentResponse> }
 
@@ -38,23 +39,25 @@ const TournamentsItem: FC<TournamentResponse> = ({
     createdAt,
     participants,
 }) => {
+    const router = useRouter();
     return (
         <Card
-            as={Link} href={`/tournaments/${id}`}
-            className="p-4 mx-[-16px] md:mx-0 rounded-none md:rounded-xl"
-            shadow="lg"
+            className={cn(
+                'flex flex-col gap-2 p-4',
+                'cursor-pointer break-inside-avoid',
+                'border-r-0 md:border-r border-l-0 md:border-l rounded-none md:rounded-lg mx-[-16px] md:mx-0',
+            )}
+            onClick={() => router.push(`/tournaments/${id}`)}
         >
-            <div className="flex flex-col gap-2">
-                <h2 className="truncate w-full font-bold">{name}</h2>
-                <p className="flex flex-wrap items-center text-stone-400">
-                    {formatString(type)}
-                    <Dot />
-                    {totalParticipants} participants
-                    <Dot />
-                    {formatDate(createdAt)}
-                </p>
-                <TournamentsItemStatus status={status} participants={participants} />
-            </div>
+            <h2 className="truncate w-full font-bold">{name}</h2>
+            <p className="flex flex-wrap items-center text-stone-400">
+                {formatString(type)}
+                <Dot />
+                {totalParticipants} participants
+                <Dot />
+                {formatDate(createdAt)}
+            </p>
+            <TournamentsItemStatus status={status} participants={participants} />
         </Card>
     );
 };

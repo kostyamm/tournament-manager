@@ -2,20 +2,24 @@
 
 import { formatString } from '@/helpers/formatString';
 import { Participant, TournamentStatus } from '@prisma/client';
-import { Fragment } from 'react';
-import { useDisclosure } from '@nextui-org/react';
-import { Button } from '@nextui-org/button';
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@nextui-org/modal';
+import { Button } from '@/components/ui/button';
 import { BookOpenText } from 'lucide-react';
 import { TournamentResponse } from '@/prisma/prisma-types';
 import { useParams } from 'next/navigation';
 import useSWR from 'swr';
 import { ScoreList } from '@/components/ScoreList';
+import {
+    Drawer, DrawerClose,
+    DrawerContent,
+    DrawerDescription, DrawerFooter,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger,
+} from '@/components/ui/drawer';
 
 export const TournamentStatistics = () => {
     const { slug } = useParams<{ slug: string }>()
     const { data } = useSWR<TournamentResponse>(`/tournaments/${slug}`);
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     if (!data) {
         return null
@@ -24,36 +28,29 @@ export const TournamentStatistics = () => {
     const { participants, status } = data;
 
     return (
-        <Fragment>
-            <Button onPress={onOpen} variant="shadow" color="primary" isIconOnly>
-                <BookOpenText />
-            </Button>
-            <Modal
-                scrollBehavior="inside"
-                isOpen={isOpen}
-                onOpenChange={onOpenChange}
-                placement="center"
-                backdrop="blur"
-                className="m-0"
-                size="2xl"
-            >
-                <ModalContent>
-                    {(onClose) => (
-                        <>
-                            <ModalHeader className="flex flex-col gap-1">Tournament statistics</ModalHeader>
-                            <ModalBody>
-                                <TournamentStatisticsContent participants={participants} status={status} />
-                            </ModalBody>
-                            <ModalFooter>
-                                <Button color="danger" variant="light" onPress={onClose}>
-                                    Close
-                                </Button>
-                            </ModalFooter>
-                        </>
-                    )}
-                </ModalContent>
-            </Modal>
-        </Fragment>
+        <Drawer>
+            <DrawerTrigger asChild>
+                <Button size="icon">
+                    <BookOpenText />
+                </Button>
+            </DrawerTrigger>
+            <DrawerContent className="border-l-0 border-r-0">
+                <div className="mx-auto w-full max-w-3xl">
+                    <DrawerHeader className="p-6">
+                        <DrawerTitle>Tournament statistics</DrawerTitle>
+                        <DrawerDescription>{data.name}</DrawerDescription>
+                    </DrawerHeader>
+                    <div className="p-6 pb-0 max-h-[calc(100dvh_-_400px)] overflow-y-auto">
+                        <TournamentStatisticsContent participants={participants} status={status} />
+                    </div>
+                    <DrawerFooter className="p-6">
+                        <DrawerClose asChild>
+                            <Button variant="outline">Cancel</Button>
+                        </DrawerClose>
+                    </DrawerFooter>
+                </div>
+            </DrawerContent>
+        </Drawer>
     );
 };
 

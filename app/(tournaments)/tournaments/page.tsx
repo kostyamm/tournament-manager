@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import { PageTitle } from '@/components/PageTitle';
-import { Button } from '@nextui-org/button';
+import { Button } from '@/components/ui/button';
 import { CirclePlus } from 'lucide-react';
 import Link from 'next/link';
 import { NoTournaments, TournamentsList } from '@/components/Tournaments';
@@ -26,9 +26,8 @@ export default async function Tournaments() {
 const TournamentsTitle = () => {
     return (
         <PageTitle title="Tournaments">
-            <Button as={Link} href="/tournaments/create" variant="shadow" color="primary">
-                <CirclePlus />
-                Create
+            <Button asChild>
+                <Link href="/tournaments/create" className="flex items-center gap-2"><CirclePlus /> Create</Link>
             </Button>
         </PageTitle>
     );

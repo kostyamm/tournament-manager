@@ -1,7 +1,12 @@
 'use client';
 
-import { Button } from '@nextui-org/button';
-import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from '@nextui-org/dropdown';
+import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Settings, Trash } from 'lucide-react';
 import { TournamentResponse } from '@/prisma/prisma-types';
 import { useParams, useRouter } from 'next/navigation';
@@ -10,42 +15,36 @@ import { ClientSideApi } from '@/services/ClientSideApi';
 
 export const TournamentActions = () => {
     const router = useRouter();
-    const { slug } = useParams<{ slug: string }>()
+    const { slug } = useParams<{ slug: string }>();
     const { data } = useSWR<TournamentResponse>(`/tournaments/${slug}`);
 
     const handleDelete = async () => {
-        const deletedTournament = await ClientSideApi.deleteTournament(slug)
+        const deletedTournament = await ClientSideApi.deleteTournament(slug);
 
         if (!deletedTournament.id) {
-            return
+            return;
         }
 
         router.replace('/tournaments');
-    }
+    };
 
     if (!data) {
-        return null
+        return null;
     }
 
     return (
-        <Dropdown backdrop="blur">
-            <DropdownTrigger>
-                <Button isIconOnly variant="bordered">
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button size="icon" variant="outline">
                     <Settings />
                 </Button>
-            </DropdownTrigger>
-            <DropdownMenu variant="faded">
-                <DropdownItem
-                    key="delete"
-                    className="text-danger"
-                    color="danger"
-                    startContent={<Trash size={18} />}
-                    description={data.name}
-                    onClick={handleDelete}
-                >
-                    Delete
-                </DropdownItem>
-            </DropdownMenu>
-        </Dropdown>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent side="bottom" align="end">
+                <DropdownMenuItem onClick={handleDelete} className="text-destructive">
+                    <Trash size={18} />
+                    <span>Delete {data.name}</span>
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
     );
 };
