@@ -88,8 +88,8 @@ export const CreateTournamentForm = () => {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="m-auto md:w-3/5">
-                <Card className="pt-6 border-r-0 md:border-r border-l-0 md:border-l rounded-none md:rounded-lg mx-[-16px] md:mx-0">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="container-half">
+                <Card className="pt-6">
                     <CardContent className="flex flex-col gap-4 px-4 md:px-6">
                         <FormField
                             name="name"
@@ -147,7 +147,7 @@ export const CreateTournamentForm = () => {
                     </CardContent>
 
                     <CardFooter className="pb-6 px-4 md:px-6">
-                        <Button type="submit">Create</Button>
+                        <Button size="lg" type="submit" className="w-full md:w-fit">Create</Button>
                     </CardFooter>
                 </Card>
             </form>

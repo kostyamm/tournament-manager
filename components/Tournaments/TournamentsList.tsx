@@ -23,7 +23,7 @@ export const TournamentsList: FC<TournamentsList> = ({ tournaments }) => {
     }
 
     return (
-        // <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
+        // <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8"> // default grid
         <div className="md:columns-2 xl:columns-3 gap-8 space-y-8">
             {data.map((tournament) => <TournamentsItem key={tournament.id} {...tournament} />)}
         </div>
@@ -45,12 +45,12 @@ const TournamentsItem: FC<TournamentResponse> = ({
             className={cn(
                 'flex flex-col gap-2 p-4',
                 'cursor-pointer break-inside-avoid',
-                'border-r-0 md:border-r border-l-0 md:border-l rounded-none md:rounded-lg mx-[-16px] md:mx-0',
+                'hover:opacity-75',
             )}
             onClick={() => router.push(`/tournaments/${id}`)}
         >
             <h2 className="truncate w-full font-bold">{name}</h2>
-            <p className="flex flex-wrap items-center text-stone-400">
+            <p className="flex flex-wrap items-center text-foreground/60">
                 {formatString(type)}
                 <Dot />
                 {totalParticipants} participants
@@ -70,7 +70,7 @@ const TournamentsItemStatus = ({ status, participants }: {
     const isCompleted = status === TournamentStatus.COMPLETED;
 
     if (!isCompleted) {
-        return <div className="flex items-center flex-wrap gap-1 text-stone-400">{formatString(status)}</div>;
+        return <div className="flex items-center flex-wrap gap-1 text-foreground/60">{formatString(status)}</div>;
     }
 
     return (

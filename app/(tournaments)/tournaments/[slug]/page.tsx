@@ -1,11 +1,11 @@
 import { PageTitle } from '@/components/PageTitle';
-import { CompletedTournament, RoundRobin } from '@/components/Tournaments';
+import { RoundRobin } from '@/components/Tournaments';
 import { notFound } from 'next/navigation';
-import { TournamentStatistics } from '@/components/Tournaments/TournamentStatistics';
+import { TournamentStatistics, TournamentSettings } from '@/components/Tournaments';
+import { CompletedTournament } from '@/components/Common';
 import { fetcher } from '@/services/fetcher';
 import { headers } from 'next/headers';
 import { formatString } from '@/helpers/formatString';
-import { TournamentActions } from '@/components/Tournaments/TournamentActions';
 import { SWRProvider } from '@/contexts';
 import { SWRConfiguration } from 'swr';
 import { TournamentResponse } from '@/prisma/prisma-types';
@@ -27,16 +27,22 @@ export default async function Tournament(props: { params: Promise<{ slug: string
 
     return (
         <SWRProvider value={providerConfig}>
-            <PageTitle title={tournament.name} description={formatString(tournament.type)}>
-                <div className="flex items-center gap-2 md:gap-4 ml-auto">
-                    <TournamentStatistics />
-                    <TournamentActions />
-                </div>
-            </PageTitle>
+            <TournamentTitle name={tournament.name} type={tournament.type} />
 
             <CompletedTournament />
 
             <RoundRobin />
         </SWRProvider>
+    );
+};
+
+const TournamentTitle = ({ name, type }: Pick<TournamentResponse, 'name' | 'type'>) => {
+    return (
+        <PageTitle title={name} description={formatString(type)}>
+            <div className="flex items-center gap-2 md:gap-4 ml-auto">
+                <TournamentStatistics />
+                <TournamentSettings />
+            </div>
+        </PageTitle>
     );
 };

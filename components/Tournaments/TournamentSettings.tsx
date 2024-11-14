@@ -13,7 +13,7 @@ import { useParams, useRouter } from 'next/navigation';
 import useSWR from 'swr';
 import { ClientSideApi } from '@/services/ClientSideApi';
 
-export const TournamentActions = () => {
+export const TournamentSettings = () => {
     const router = useRouter();
     const { slug } = useParams<{ slug: string }>();
     const { data } = useSWR<TournamentResponse>(`/tournaments/${slug}`);
@@ -35,7 +35,7 @@ export const TournamentActions = () => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button size="icon" variant="outline">
+                <Button size="iconLarge" variant="outline">
                     <Settings />
                 </Button>
             </DropdownMenuTrigger>

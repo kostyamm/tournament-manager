@@ -1,15 +1,11 @@
 import { Match, Participant, Tournament, TournamentType } from '@prisma/client';
 
-export type GenerateTournamentProps = {
+export type GenerateTournament = (props: {
     creatorId: number;
     name: string;
     type: TournamentType;
     participants: Array<string>;
-}
-
-export type GenerateTournament = (props: GenerateTournamentProps) => Promise<{
-    tournamentId: number
-} | undefined>
+}) => Promise<{ tournamentId: number } | undefined>
 
 export type TournamentMatch = Match & {
     opponentA: Participant;

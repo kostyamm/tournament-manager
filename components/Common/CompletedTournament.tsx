@@ -24,7 +24,7 @@ export const CompletedTournament = () => {
         const leader = leaders[0];
 
         return (
-            <Card className="flex flex-col items-center gap-4 text-center p-6 mb-8 md:mb-10">
+            <Card className="container-half adaptive-card block-indent flex flex-col items-center gap-4 text-center">
                 <div className="flex items-center gap-1">
                     <Crown className="text-primary" />
                     <h2 className=" text-primary">{leader.name}</h2>
@@ -35,8 +35,8 @@ export const CompletedTournament = () => {
     }
 
     return (
-        <Card className="p-6 mb-8 md:mb-10">
-            <div className="flex flex-col items-center gap-2 md:w-[500px] m-auto">
+        <Card className="container-half adaptive-card block-indent">
+            <div className="flex flex-col items-center gap-2">
                 <h2 className="text-primary font-bold">Tournament Draw</h2>
                 <h3 className="font-bold">Leaders</h3>
                 <ScoreList participants={leaders} withIcon />

@@ -1,6 +1,6 @@
-import { CreateTournamentForm } from '@/components/CreateTournamentForm';
 import { Fragment } from 'react';
 import { PageTitle } from '@/components/PageTitle';
+import { CreateTournamentForm } from '@/components/Common';
 
 export default function CreateTournament() {
     return (

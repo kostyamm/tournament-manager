@@ -2,59 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-  margin: 0;
-  min-width: 320px;
-  min-height: 100dvh;
-  overflow-x: hidden;
-}
-
-main {
-  width: 100%;
-  max-width: 1280px;
-  margin: 0 auto;
-
-  @apply pt-8 pb-20 px-4 md:pt-10 md:px-6;
-}
-
-button svg, a svg {
-  stroke-width: 1.2;
-}
-
-h1 {
-  @apply text-2xl md:text-4xl font-bold;
-}
-
-h2 {
-  @apply text-xl font-semibold;
-}
-
-h3 {
-  @apply text-lg font-medium;
-}
-
-p {
-  @apply text-[16px] text-stone-100;
-}
-
-a:hover {
-  @apply opacity-80;
-}
-
-.bg-dot:before {
-  position: absolute;
-  content: ' ';
-  z-index: -1;
-  inset: 0;
-  height: 100%;
-  width: 100%;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-  background-size: 16px 16px;
-  mask-image: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 20%, rgba(0,0,0,1) 80%, rgba(0,0,0,0) 100%);
-  /*mask-image: radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 60%);*/
-}
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -76,7 +23,7 @@ a:hover {
     --border: 20 5.9% 90%;
     --input: 20 5.9% 90%;
     --ring: 24.6 95% 53.1%;
-    --radius: 0.5rem;
+    --radius: 0.75rem;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -116,6 +63,7 @@ a:hover {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -125,4 +73,63 @@ a:hover {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  min-width: 320px;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+body:before {
+  position: fixed;
+  content: ' ';
+  z-index: -100;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+  background-size: 16px 16px;
+  mask-image: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 20%, rgba(0,0,0,1) 80%, rgba(0,0,0,0) 100%);
+}
+body.dark:before {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+}
+
+main {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+
+  @apply pt-6 md:pt-10 px-4 md:px-6 pb-20;
+}
+
+h1 {
+  @apply text-2xl md:text-4xl font-bold;
+}
+
+h2 {
+  @apply text-xl font-semibold;
+}
+
+h3 {
+  @apply text-lg font-medium;
+}
+
+a:hover {
+  @apply text-foreground/80;
+}
+
+.adaptive-card {
+  @apply border-r-0 md:border-r border-l-0 md:border-l rounded-none md:rounded-lg mx-[-16px] md:mx-0 px-4 md:px-6 py-6;
+}
+
+.container-half {
+  @apply md:m-auto md:w-3/5;
+}
+
+.block-indent {
+  @apply mb-6 md:mb-10;
 }

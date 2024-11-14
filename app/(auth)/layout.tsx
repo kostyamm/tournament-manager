@@ -1,13 +1,12 @@
 import { Fragment, ReactNode } from 'react';
-import { HeaderLogo } from '@/components/HeaderLogo';
-import { HeaderBase } from '@/components/Header';
+import { HeaderLogo, HeaderWrapper } from '@/components/Header';
 
 export default function AuthLayout({ children }: Readonly<{ children: ReactNode; }>) {
     return (
         <Fragment>
-            <HeaderBase>
+            <HeaderWrapper>
                 <HeaderLogo />
-            </HeaderBase>
+            </HeaderWrapper>
             <main className="p-10">
                 {children}
             </main>

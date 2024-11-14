@@ -6,12 +6,14 @@ export const PageTitle = ({ children, title, description }: {
     description?: string
 }) => {
     return (
-        <div className="flex flex-wrap justify-between items-start gap-2 pb-8 md:pb-10">
-            <div>
-                <h1>{title}</h1>
-                {!!description && <p className="text-foreground mt-1">{description}</p>}
+        <div className="grid grid-cols-12 min-h-14 md:min-h-16 gap-2 block-indent">
+            <div className="col-span-7 flex flex-col justify-center">
+                <h1 className="truncate">{title}</h1>
+                {!!description && <p className="text-foreground">{description}</p>}
             </div>
-            {children}
+            <div className="col-span-5 flex items-center justify-end">
+                {children}
+            </div>
         </div>
     );
 };

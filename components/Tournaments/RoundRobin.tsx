@@ -25,7 +25,7 @@ export const RoundRobin = () => {
     }
 
     return (
-        <div className="m-auto md:w-3/5 flex flex-col gap-8">
+        <div className="container-half flex flex-col gap-8">
             {data.matches.map((match) => <RoundRobinMatch key={match.id} match={match} handleWinner={handleWinner} />)}
         </div>
     );

@@ -1,5 +1,5 @@
 import { Fragment, ReactNode } from 'react';
-import { Header } from '@/components/Header';
+import { Header } from '@/components/Header/Header';
 
 export default function TournamentLayout({ children }: Readonly<{ children: ReactNode; }>) {
     return (

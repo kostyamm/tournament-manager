@@ -1,11 +1,7 @@
+import { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next';
 import { NextAuthOptions, getServerSession, Session } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import { prisma } from '@/prisma/prisma-client';
-import {
-    GetServerSidePropsContext,
-    NextApiRequest,
-    NextApiResponse,
-} from 'next';
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -14,7 +10,6 @@ export const authOptions: NextAuthOptions = {
             clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
         }),
     ],
-
     pages: {
         signIn: '/login',
     },
