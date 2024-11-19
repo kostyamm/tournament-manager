@@ -9,6 +9,7 @@ import { formatString } from '@/helpers/formatString';
 import { SWRProvider } from '@/contexts';
 import { SWRConfiguration } from 'swr';
 import { TournamentResponse } from '@/prisma/prisma-types';
+import { Dot } from 'lucide-react';
 
 export default async function Tournament(props: { params: Promise<{ slug: string }> }) {
     const params = await props.params;
@@ -27,7 +28,7 @@ export default async function Tournament(props: { params: Promise<{ slug: string
 
     return (
         <SWRProvider value={providerConfig}>
-            <TournamentTitle name={tournament.name} type={tournament.type} />
+            <TournamentTitle tournament={tournament} />
 
             <CompletedTournament />
 
@@ -36,9 +37,16 @@ export default async function Tournament(props: { params: Promise<{ slug: string
     );
 };
 
-const TournamentTitle = ({ name, type }: Pick<TournamentResponse, 'name' | 'type'>) => {
+const TournamentTitle = ({ tournament }: { tournament: TournamentResponse }) => {
+    const Description = () => (
+        <div className="flex items-center">
+            {formatString(tournament.type)}
+            <Dot />
+            {formatString(tournament.scoringSystem)}
+        </div>
+    );
     return (
-        <PageTitle title={name} description={formatString(type)}>
+        <PageTitle title={tournament.name} description={<Description />}>
             <div className="flex items-center gap-2 md:gap-4 ml-auto">
                 <TournamentStatistics />
                 <TournamentSettings />

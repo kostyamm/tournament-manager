@@ -27,6 +27,12 @@ enum TournamentStatus {
   COMPLETED // Турнир завершен
 }
 
+enum ScoringSystem {
+  CLASSIC
+  CHESS
+  TWO_POINT
+}
+
 enum Winner {
   opponentA
   opponentB
@@ -45,6 +51,7 @@ model Tournament {
   id                Int              @id @default(autoincrement())
   name              String
   type              TournamentType // Тип турнира
+  scoringSystem     ScoringSystem
   status            TournamentStatus @default(PENDING) // Статус турнира
   createdAt         DateTime         @default(now())
   creator           User             @relation(fields: [creatorId], references: [id])
@@ -58,7 +65,7 @@ model Tournament {
 model Participant {
   id           Int        @id @default(autoincrement())
   name         String
-  score        Int        @default(0) // Общее количество очков участника
+  score        Float      @default(0) // Общее количество очков участника
   tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId Int
   matchesAsA   Match[]    @relation("OpponentA") // Матчи, где участник — Opponent A
@@ -75,7 +82,7 @@ model Match {
   opponentB    Participant @relation("OpponentB", fields: [opponentBId], references: [id])
   opponentBId  Int
   date         DateTime?
-  scoreA       Int? // Очки для Opponent A
-  scoreB       Int? // Очки для Opponent B
+  scoreA       Float? // Очки для Opponent A
+  scoreB       Float? // Очки для Opponent B
   winner       Winner?
 }

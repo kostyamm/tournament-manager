@@ -1,6 +1,5 @@
 import { prisma } from '@/prisma/prisma-client';
-import { TournamentType } from '@prisma/client';
-import { GenerateTournament, GetTournamentById } from '@/prisma/prisma-types';
+import { GetTournamentById } from '@/prisma/prisma-types';
 
 export const getTournamentById: GetTournamentById = async (tournamentId) => {
     return prisma.tournament.findUnique({
@@ -17,34 +16,7 @@ export const getTournamentById: GetTournamentById = async (tournamentId) => {
     });
 };
 
-export const generateTournament: GenerateTournament = async ({ creatorId, name, type, participants }) => {
-    if (type !== TournamentType.ROUND_ROBIN) {
-        return;
-    }
-
-    const tournament = await prisma.tournament.create({
-        data: { name, type, creatorId, totalParticipants: participants.length },
-    });
-
-    const participantsData = participants.map((name) => ({
-        name,
-        tournamentId: tournament.id,
-    }));
-
-    await prisma.participant.createMany({
-        data: participantsData,
-    });
-
-    const matchesData = await generateRoundRobinMatches(tournament.id);
-
-    await prisma.match.createMany({
-        data: matchesData,
-    });
-
-    return { tournamentId: tournament.id };
-};
-
-const generateRoundRobinMatches = async (tournamentId: number) => {
+export const generateRoundRobinMatches = async (tournamentId: number) => {
     const allParticipants = await prisma.participant.findMany({
         where: { tournamentId },
     });

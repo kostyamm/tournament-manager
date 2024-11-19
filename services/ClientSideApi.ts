@@ -1,6 +1,6 @@
 import { GenerateTournament, TournamentResponse } from '@/prisma/prisma-types';
 import { fetcher } from '@/services/fetcher';
-import { Match } from '@prisma/client';
+import { Winner } from '@prisma/client';
 
 const createTournament: GenerateTournament = async (data) => {
     return await fetcher('/tournaments', {
@@ -9,7 +9,7 @@ const createTournament: GenerateTournament = async (data) => {
     });
 };
 
-const updateTournamentMatch = async (id: string | number, data: Partial<Match>): Promise<TournamentResponse> => {
+const updateTournamentMatch = async (id: string | number, data: { winner: Winner }): Promise<TournamentResponse> => {
     return await fetcher(`/tournaments/match/${id}`, {
         method: 'POST',
         body: JSON.stringify(data),

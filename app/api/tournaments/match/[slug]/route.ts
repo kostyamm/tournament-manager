@@ -1,19 +1,22 @@
 import { getTournamentById } from '@/prisma/prisma-actions';
 import { prisma } from '@/prisma/prisma-client';
-import { Match, TournamentStatus } from '@prisma/client';
+import { Match, ScoringSystem, TournamentStatus, Winner } from '@prisma/client';
 
-/**
- * TODO Required body
- * { scoreA: 0, scoreB: 3, winner: 'opponentB' }
- */
 export async function POST(request: Request, { params }: { params: Promise<{ slug: string }> }) {
     const slug = (await params).slug;
     const matchId = Number(slug);
     const body = await request.json();
 
+    if (!body.winner) {
+        return Response.json({
+            status: 400,
+            message: 'The "winner" field is required',
+        });
+    }
+
     const match = await prisma.match.findUnique({
         where: { id: matchId },
-        include: { opponentA: true, opponentB: true },
+        include: { opponentA: true, opponentB: true, tournament: true },
     });
 
     if (!match) {
@@ -23,24 +26,26 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
         );
     }
 
-    if (!!match?.winner) {
-        await resetOpponentsScore(match);
-    }
-
     try {
         const tournamentStatus = await getTournamentStatus(match);
+        const { scoreA, scoreB } = getScores(body.winner, match.tournament.scoringSystem);
+
+        const opponentAScore = match.opponentA.score - (match.scoreA || 0) + scoreA
+        const opponentBScore = match.opponentB.score - (match.scoreB || 0) + scoreB
 
         await prisma.match.update({
             where: { id: matchId },
             include: { opponentA: true, opponentB: true },
             data: {
+                scoreA,
+                scoreB,
+                winner: body.winner,
                 opponentA: {
-                    update: { score: { increment: body.scoreA } },
+                    update: { score: opponentAScore },
                 },
                 opponentB: {
-                    update: { score: { increment: body.scoreB } },
+                    update: { score: opponentBScore },
                 },
-                ...body,
                 tournament: {
                     update: {
                         status: tournamentStatus,
@@ -71,18 +76,32 @@ const getTournamentStatus = async (match: Match) => {
     return isCompleted ? TournamentStatus.COMPLETED : TournamentStatus.IN_PROGRESS;
 };
 
-const resetOpponentsScore = async ({ id, scoreA, scoreB }: Match) => {
-    await prisma.match.update({
-        where: { id },
-        data: {
-            opponentA: {
-                update: { score: { increment: 0 - (scoreA ?? 0) } },
-            },
-            opponentB: {
-                update: { score: { increment: 0 - (scoreB ?? 0) } },
-            },
-        },
-    });
+const getScores = (winner: Winner, scoringSystem: ScoringSystem): { scoreA: number, scoreB: number } => {
+    const oppositeOpponent = winner === Winner.opponentA ? Winner.opponentB : Winner.opponentA;
+    const { victory, defeat, draw } = ScoreMap[scoringSystem];
+
+    if (winner === Winner.Draw) {
+        return {
+            scoreA: draw,
+            scoreB: draw,
+        };
+    }
+
+    const scores = {
+        [Winner.opponentA]: victory,
+        [Winner.opponentB]: victory,
+    };
+
+    scores[oppositeOpponent] = defeat;
+
+    return {
+        scoreA: scores[Winner.opponentA],
+        scoreB: scores[Winner.opponentB],
+    };
 };
 
-
+const ScoreMap: { [key in ScoringSystem]: { victory: number, defeat: number, draw: number } } = {
+    [ScoringSystem.CLASSIC]: { victory: 3, defeat: 0, draw: 1 },
+    [ScoringSystem.CHESS]: { victory: 1, defeat: 0, draw: 0.5 },
+    [ScoringSystem.TWO_POINT]: { victory: 2, defeat: 0, draw: 1 },
+};
