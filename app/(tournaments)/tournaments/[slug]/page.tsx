@@ -1,15 +1,11 @@
-import { PageTitle } from '@/components/PageTitle';
-import { RoundRobin } from '@/components/Tournaments';
+import { RoundRobin, TournamentTitle } from '@/components/Tournaments';
 import { notFound } from 'next/navigation';
-import { TournamentStatistics, TournamentSettings } from '@/components/Tournaments';
 import { CompletedTournament } from '@/components/Common';
 import { fetcher } from '@/services/fetcher';
 import { headers } from 'next/headers';
-import { formatString } from '@/helpers/formatString';
 import { SWRProvider } from '@/contexts';
 import { SWRConfiguration } from 'swr';
 import { TournamentResponse } from '@/prisma/prisma-types';
-import { Dot } from 'lucide-react';
 
 export default async function Tournament(props: { params: Promise<{ slug: string }> }) {
     const params = await props.params;
@@ -28,29 +24,11 @@ export default async function Tournament(props: { params: Promise<{ slug: string
 
     return (
         <SWRProvider value={providerConfig}>
-            <TournamentTitle tournament={tournament} />
+            <TournamentTitle />
 
             <CompletedTournament />
 
             <RoundRobin />
         </SWRProvider>
-    );
-};
-
-const TournamentTitle = ({ tournament }: { tournament: TournamentResponse }) => {
-    const Description = () => (
-        <div className="flex items-center">
-            {formatString(tournament.type)}
-            <Dot />
-            {formatString(tournament.scoringSystem)}
-        </div>
-    );
-    return (
-        <PageTitle title={tournament.name} description={<Description />}>
-            <div className="flex items-center gap-2 md:gap-4 ml-auto">
-                <TournamentStatistics />
-                <TournamentSettings />
-            </div>
-        </PageTitle>
     );
 };

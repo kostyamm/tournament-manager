@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
+import { SCORING_SYSTEM, TOURNAMENT_TYPES } from '@/constants/options';
 
 const formSchema = object({
     name: string().required().min(2).max(20).label('Name'),
@@ -45,20 +46,6 @@ const formSchema = object({
 });
 
 export type CreateTournamentFormSchema = InferType<typeof formSchema>
-
-const TOURNAMENT_TYPES = [
-    { key: TournamentType.SINGLE_ELIMINATION, label: 'Single Elimination' },
-    { key: TournamentType.DOUBLE_ELIMINATION, label: 'Double Elimination' },
-    { key: TournamentType.ROUND_ROBIN, label: 'Round Robin' },
-    { key: TournamentType.SWISS, label: 'Swiss' },
-    { key: TournamentType.FREE_FOR_ALL, label: 'Free-for-all' },
-];
-
-const SCORING_SYSTEM = [
-    { key: ScoringSystem.CLASSIC, label: 'Classic system (3-1-0)' },
-    { key: ScoringSystem.CHESS, label: 'Chess system (1-0.5-0)' },
-    { key: ScoringSystem.TWO_POINT, label: 'Two-point system (2-1-0)' },
-];
 
 export const CreateTournamentForm = () => {
     const router = useRouter();
