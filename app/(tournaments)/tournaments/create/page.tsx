@@ -1,12 +1,12 @@
 import { Fragment } from 'react';
 import { PageTitle } from '@/components/PageTitle';
-import { CreateTournamentForm } from '@/components/Common';
+import { TournamentCreateForm } from '@/components/TournamentCreateForm';
 
 export default function CreateTournament() {
     return (
         <Fragment>
             <PageTitle title="New Tournament" />
-            <CreateTournamentForm />
+            <TournamentCreateForm />
         </Fragment>
     );
 };

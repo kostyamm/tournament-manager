@@ -1,3 +1,5 @@
+export * from './AuthButton'
+export * from './ImagePreview'
+export * from './ScoreList'
 export * from './NoTournaments'
-export * from './CompletedTournament'
-export * from './CreateTournamentForm'
+export * from './TournamentResults'

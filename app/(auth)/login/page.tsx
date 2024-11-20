@@ -1,4 +1,4 @@
-import { AuthButton } from '@/components/AuthButton';
+import { AuthButton } from '@/components/Common';
 
 export default function Login({ searchParams }: { searchParams?: { callbackUrl: string } }) {
     return (

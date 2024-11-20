@@ -1,6 +1,7 @@
-import { RoundRobin, TournamentTitle } from '@/components/Tournaments';
 import { notFound } from 'next/navigation';
-import { CompletedTournament } from '@/components/Common';
+import { TournamentTitle } from '@/components/TournamentTitle';
+import { TournamentResults } from '@/components/Common';
+import { RoundRobin } from '@/components/Tournaments';
 import { fetcher } from '@/services/fetcher';
 import { headers } from 'next/headers';
 import { SWRProvider } from '@/contexts';
@@ -26,7 +27,7 @@ export default async function Tournament(props: { params: Promise<{ slug: string
         <SWRProvider value={providerConfig}>
             <TournamentTitle />
 
-            <CompletedTournament />
+            <TournamentResults />
 
             <RoundRobin />
         </SWRProvider>

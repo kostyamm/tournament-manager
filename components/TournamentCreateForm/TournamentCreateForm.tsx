@@ -1,7 +1,6 @@
 'use client';
 
-import { InferType, mixed, object, string } from 'yup';
-import { useForm } from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -10,60 +9,35 @@ import { ScoringSystem, TournamentType } from '@prisma/client';
 import { ClientSideApi } from '@/services/ClientSideApi';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Plus, X } from 'lucide-react';
 import { SCORING_SYSTEM, TOURNAMENT_TYPES } from '@/constants/options';
+import { tournamentCreateFormSchema, TournamentCreateFormSchema } from '@/components/TournamentCreateForm';
 
-const formSchema = object({
-    name: string().required().min(2).max(20).label('Name'),
-    type: mixed<TournamentType>().oneOf(Object.values(TournamentType)).required().label('Type'),
-    scoringSystem: mixed<ScoringSystem>().oneOf(Object.values(ScoringSystem)).required().label('Scoring system'),
-    participants: string()
-        .required()
-        .test(
-            'is-enough',
-            'Participants must have at least 2 lines',
-            function (values: string): boolean {
-                const participants = values.split('\n').filter((v) => !!v);
 
-                return participants.length >= 2;
-            },
-        )
-        .test(
-            'is-enough',
-            'Each participant`s name must not be less than 2 and more than 15 characters long',
-            function (values: string): boolean {
-                const participants = values?.split('\n').filter((v) => !!v);
-
-                const notLess = participants.every((v) => v.length >= 2);
-                const notMore = participants.every((v) => v.length <= 15);
-
-                return notLess && notMore;
-            },
-        )
-        .label('Participants'),
-});
-
-export type CreateTournamentFormSchema = InferType<typeof formSchema>
-
-export const CreateTournamentForm = () => {
+// TODO decomposition
+export const TournamentCreateForm = () => {
     const router = useRouter();
 
-    const form = useForm<CreateTournamentFormSchema>({
-        resolver: yupResolver(formSchema),
+    const form = useForm<TournamentCreateFormSchema>({
+        resolver: yupResolver(tournamentCreateFormSchema),
         defaultValues: {
             name: '',
             type: TournamentType.ROUND_ROBIN,
             scoringSystem: ScoringSystem.CLASSIC,
-            participants: '',
+            participants: [{ name: '' }, { name: '' }],
         },
     });
 
-    const isDisabled = form.formState.isSubmitting
+    const participants = useFieldArray({
+        name: 'participants',
+        control: form.control,
+    });
 
-    const onSubmit = async (values: CreateTournamentFormSchema) => {
-        const participants = values.participants.split('\n');
+    const isDisabled = form.formState.isSubmitting;
+
+    const onSubmit = async (values: TournamentCreateFormSchema) => {
+        const participants = values.participants.map((participant) => participant.name);
 
         const response = await ClientSideApi.createTournament({
             ...values,
@@ -153,32 +127,68 @@ export const CreateTournamentForm = () => {
                         />
 
                         <FormField
-                            name="participants"
                             control={form.control}
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Participants (one per line)</FormLabel>
-                                    <FormControl>
-                                        <Textarea
+                            name="participants"
+                            render={() => (
+                                <FormItem className="space-y-3">
+                                    <FormLabel className="font-semibold text-md">Participants</FormLabel>
+                                    {participants.fields.map((item, index) => (
+                                        <div key={item.id} className="flex gap-2">
+                                            <FormField
+                                                control={form.control}
+                                                name={`participants.${index}.name`}
+                                                render={({ field }) => (
+                                                    <FormItem className="flex-grow">
+                                                        <FormControl>
+                                                            <Input
+                                                                disabled={isDisabled}
+                                                                placeholder={`Participant ${index + 1}`}
+                                                                {...field}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                size="icon"
+                                                onClick={() => participants.remove(index)}
+                                                disabled={isDisabled || participants.fields.length <= 2}
+                                            >
+                                                <X className="text-destructive" />
+                                            </Button>
+                                        </div>
+                                    ))}
+
+                                    <div className="flex items-center gap-4">
+                                        <Button
+                                            type="button"
+                                            variant="secondary"
+                                            onClick={() => participants.append({ name: '' })}
                                             disabled={isDisabled}
-                                            rows={6}
-                                            placeholder="John Doe Jane Smith ..."
-                                            className="resize-none"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
+                                            size="sm"
+                                        >
+                                            <Plus />
+                                            Add Participant
+                                        </Button>
+
+                                        <div className="text-sm text-destructive leading-4">
+                                            {form.formState.errors.participants?.root?.message}
+                                        </div>
+                                    </div>
                                 </FormItem>
                             )}
                         />
                     </CardContent>
 
-                    <CardFooter className="pb-6 px-4 md:px-6">
+                    <CardFooter className="py-4 px-4 md:px-6 border-t">
                         <Button
                             disabled={isDisabled}
                             size="lg"
                             type="submit"
-                            className="w-full md:w-fit"
+                            className="w-full md:w-fit ml-auto"
                         >
                             {form.formState.isSubmitting && <Loader2 className="animate-spin" />}
                             Create

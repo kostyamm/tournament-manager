@@ -4,10 +4,9 @@ import { TournamentResponse } from '@/prisma/prisma-types';
 import { formatString } from '@/helpers/formatString';
 import { Dot } from 'lucide-react';
 import { PageTitle } from '@/components/PageTitle';
-import { TournamentStatistics } from '@/components/Tournaments/TournamentStatistics';
-import { TournamentSettings } from '@/components/Tournaments/TournamentSettings';
 import { useParams } from 'next/navigation';
 import useSWR from 'swr';
+import { TournamentSettings, TournamentStatistics } from '@/components/TournamentTitle';
 
 export const TournamentTitle = () => {
     const { slug } = useParams<{ slug: string }>()

@@ -7,9 +7,9 @@ import useSWR from 'swr';
 import { Card } from '@/components/ui/card';
 import { Crown } from 'lucide-react';
 import { getTournamentLeaders } from '@/helpers/leaders';
-import { ScoreList } from '@/components/ScoreList';
+import { ScoreList } from '@/components/Common';
 
-export const CompletedTournament = () => {
+export const TournamentResults = () => {
     const { slug } = useParams<{ slug: string }>();
     const { data: tournament } = useSWR<TournamentResponse>(`/tournaments/${slug}`);
     const isCompleted = tournament?.status === TournamentStatus.COMPLETED;

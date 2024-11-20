@@ -9,7 +9,7 @@ import { TournamentResponse } from '@/prisma/prisma-types';
 import { Participant, TournamentStatus } from '@prisma/client';
 import { formatDate } from '@/helpers/formatDate';
 import { getTournamentLeaders } from '@/helpers/leaders';
-import { ScoreList } from '@/components/ScoreList';
+import { ScoreList } from '@/components/Common';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
