@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import { Nunito } from 'next/font/google';
-import { AuthProvider, SWRProvider } from '@/contexts';
+import { AuthProvider, DialogProvider, SWRProvider } from '@/contexts';
 import './globals.css';
 
 const nunito = Nunito({
@@ -28,9 +28,11 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode;
         <html lang="en">
         <body className={`${nunito.className} dark`}>
         <AuthProvider>
-            <SWRProvider>
-                {children}
-            </SWRProvider>
+            <DialogProvider>
+                <SWRProvider>
+                    {children}
+                </SWRProvider>
+            </DialogProvider>
         </AuthProvider>
         </body>
         </html>

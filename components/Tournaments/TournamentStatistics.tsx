@@ -24,7 +24,7 @@ import { useState } from 'react';
 import { SCORING_SYSTEM } from '@/constants/options';
 
 export const TournamentStatistics = () => {
-    const [open, setOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
     const { isMobile } = useBreakpoint();
     const { slug } = useParams<{ slug: string }>();
     const { data: tournament } = useSWR<TournamentResponse>(`/tournaments/${slug}`);
@@ -35,7 +35,7 @@ export const TournamentStatistics = () => {
 
     if (!isMobile) {
         return (
-            <Dialog open={open} onOpenChange={setOpen}>
+            <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
                     <Button size="iconLarge">
                         <BookOpenText />
@@ -48,7 +48,7 @@ export const TournamentStatistics = () => {
                     </DialogHeader>
                     <TournamentStatisticsContent tournament={tournament} />
                     <DialogFooter>
-                        <Button variant="secondary" onClick={() => setOpen(false)}>
+                        <Button variant="secondary" onClick={() => setIsOpen(false)}>
                             Close
                         </Button>
                     </DialogFooter>
@@ -70,7 +70,9 @@ export const TournamentStatistics = () => {
                         <DrawerTitle>Tournament statistics</DrawerTitle>
                         <DrawerDescription>{tournament.name}</DrawerDescription>
                     </DrawerHeader>
-                    <TournamentStatisticsContent tournament={tournament} />
+                    <div className="px-6">
+                        <TournamentStatisticsContent tournament={tournament} />
+                    </div>
                     <DrawerFooter className="p-6">
                         <DrawerClose asChild>
                             <Button variant="outline">Cancel</Button>
@@ -84,12 +86,15 @@ export const TournamentStatistics = () => {
 
 const TournamentStatisticsContent = ({ tournament }: { tournament: TournamentResponse }) => {
     const { participants, scoringSystem, createdAt } = tournament;
-    const scoring = SCORING_SYSTEM.find(({ key }) => key === scoringSystem );
+    const scoring = SCORING_SYSTEM.find(({ key }) => key === scoringSystem);
+
     return (
-        <div className="max-h-[calc(100dvh_-_400px)] overflow-y-auto flex flex-col gap-6 px-6">
+        <div className="flex flex-col gap-6">
             <section>
                 <h2 className="text-primary text-medium mb-2">Participants score</h2>
-                <ScoreList participants={participants} />
+                <div className="max-h-[calc(100dvh_-_500px)] overflow-y-auto px-6 mx-[-24px]">
+                    <ScoreList participants={participants} />
+                </div>
             </section>
             <div className="flex items-center justify-between">
                 <section>

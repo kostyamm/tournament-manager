@@ -43,7 +43,7 @@ const TournamentsItem: FC<TournamentResponse> = ({
     return (
         <Card
             className={cn(
-                'flex flex-col gap-2 p-4',
+                'flex flex-col p-4 gap-2',
                 'cursor-pointer break-inside-avoid',
                 'hover:opacity-75',
             )}
