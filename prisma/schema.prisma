@@ -22,9 +22,9 @@ enum TournamentType {
 }
 
 enum TournamentStatus {
-  PENDING // Турнир ожидает начала
-  IN_PROGRESS // Турнир в процессе
-  COMPLETED // Турнир завершен
+  PENDING
+  IN_PROGRESS
+  COMPLETED
 }
 
 enum ScoringSystem {
@@ -43,36 +43,33 @@ model User {
   id          Int          @id @default(autoincrement())
   name        String
   email       String       @unique
-  tournaments Tournament[] // Связь с турнирами (один ко многим)
+  tournaments Tournament[]
 }
 
-// Модель Tournament — турнир, созданный пользователем
 model Tournament {
   id                Int              @id @default(autoincrement())
   name              String
-  type              TournamentType // Тип турнира
+  type              TournamentType
   scoringSystem     ScoringSystem
-  status            TournamentStatus @default(PENDING) // Статус турнира
+  status            TournamentStatus @default(PENDING)
   createdAt         DateTime         @default(now())
   creator           User             @relation(fields: [creatorId], references: [id])
   creatorId         Int
   totalParticipants Int
-  participants      Participant[] // Участники турнира
-  matches           Match[] // Матчи турнира
+  participants      Participant[]
+  matches           Match[]
 }
 
-// Модель Participant — участник турнира
 model Participant {
   id           Int        @id @default(autoincrement())
   name         String
-  score        Float      @default(0) // Общее количество очков участника
+  score        Float      @default(0)
   tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId Int
-  matchesAsA   Match[]    @relation("OpponentA") // Матчи, где участник — Opponent A
-  matchesAsB   Match[]    @relation("OpponentB") // Матчи, где участник — Opponent B
+  matchesAsA   Match[]    @relation("OpponentA")
+  matchesAsB   Match[]    @relation("OpponentB")
 }
 
-// Модель Match — матч между двумя участниками
 model Match {
   id           Int         @id @default(autoincrement())
   tournament   Tournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
@@ -82,7 +79,7 @@ model Match {
   opponentB    Participant @relation("OpponentB", fields: [opponentBId], references: [id])
   opponentBId  Int
   date         DateTime?
-  scoreA       Float? // Очки для Opponent A
-  scoreB       Float? // Очки для Opponent B
+  scoreA       Float?
+  scoreB       Float?
   winner       Winner?
 }

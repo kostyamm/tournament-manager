@@ -1,8 +1,8 @@
-import { GenerateTournament, TournamentResponse } from '@/prisma/prisma-types';
+import { CreateTournament, TournamentResponse } from '@/prisma/prisma-types';
 import { fetcher } from '@/services/fetcher';
 import { Winner } from '@prisma/client';
 
-const createTournament: GenerateTournament = async (data) => {
+const createTournament: CreateTournament = async (data) => {
     return await fetcher('/tournaments', {
         method: 'POST',
         body: JSON.stringify(data),

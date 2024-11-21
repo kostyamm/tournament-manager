@@ -1,7 +1,7 @@
 import { array, InferType, mixed, object, string } from 'yup';
 import { ScoringSystem, TournamentType } from '@prisma/client';
 
-export const tournamentCreateFormSchema = object({
+export const tournamentCreateSchema = object({
     name: string().required().min(2).max(20).label('Name'),
     type: mixed<TournamentType>().oneOf(Object.values(TournamentType)).required().label('Type'),
     scoringSystem: mixed<ScoringSystem>().oneOf(Object.values(ScoringSystem)).required().label('Scoring system'),
@@ -14,4 +14,4 @@ export const tournamentCreateFormSchema = object({
         .label('Participants'),
 });
 
-export type TournamentCreateFormSchema = InferType<typeof tournamentCreateFormSchema>
+export type TournamentCreateSchema = InferType<typeof tournamentCreateSchema>

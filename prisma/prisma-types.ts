@@ -1,11 +1,7 @@
-import { Match, Participant, Tournament, ScoringSystem, TournamentType } from '@prisma/client';
+import { Match, Participant, Tournament } from '@prisma/client';
+import { TournamentCreateSchema } from '@/app/api/tournaments/route.schema';
 
-export type GenerateTournament = (props: {
-    name: string;
-    type: TournamentType;
-    scoringSystem: ScoringSystem;
-    participants: Array<string>;
-}) => Promise<{ tournamentId: number } | undefined>
+export type CreateTournament = (props: TournamentCreateSchema) => Promise<{ tournamentId: number } | undefined>
 
 export type TournamentMatch = Match & {
     opponentA: Participant;
