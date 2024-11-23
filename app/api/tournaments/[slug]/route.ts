@@ -1,5 +1,6 @@
 import { getTournamentById } from '@/prisma/prisma-actions';
 import { prisma } from '@/prisma/prisma-client';
+import { auth } from '@/configs/authOptions';
 
 export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
     const slug = (await params).slug
@@ -19,9 +20,12 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ s
     const slug = (await params).slug
     const tournamentId = Number(slug)
 
+    const session = await auth();
+    const creatorId = session?.user.id;
+
     try {
         const data = await prisma.tournament.delete({
-            where: { id: tournamentId },
+            where: { id: tournamentId, creatorId },
         })
 
         return Response.json(data)
