@@ -4,7 +4,7 @@ import { TournamentResults } from '@/components/Common';
 import { RoundRobin } from '@/components/Tournaments';
 import { fetcher } from '@/services/fetcher';
 import { headers } from 'next/headers';
-import { SWRProvider } from '@/contexts';
+import { SWRProvider } from '../../../../contexts';
 import { SWRConfiguration } from 'swr';
 import { TournamentResponse } from '@/prisma/prisma-types';
 

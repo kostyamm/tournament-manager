@@ -2,7 +2,6 @@
 
 import { signIn, SignInOptions } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
-import GLogo from '@/public/g_logo.svg';
 import Image from 'next/image';
 
 export const AuthButton = ({ callbackUrl }: { callbackUrl?: string }) => {
@@ -18,7 +17,7 @@ export const AuthButton = ({ callbackUrl }: { callbackUrl?: string }) => {
     return (
         <Button onClick={handleAuth} variant="outline" size="lg" className="rounded-full">
             <Image
-                src={GLogo}
+                src='/g_logo.svg'
                 style={{ width: 18, height: 18 }}
                 alt="Sign in With Google"
             />

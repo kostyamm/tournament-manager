@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import { Nunito } from 'next/font/google';
-import { AuthProvider, DialogProvider, SWRProvider } from '@/contexts';
+import { AuthProvider, DialogProvider, SWRProvider } from '../contexts';
 import './globals.css';
 
 const nunito = Nunito({
