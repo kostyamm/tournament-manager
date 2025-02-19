@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { MENU_ITEMS } from '@/components/Header/menuItems';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib';
 import Link from 'next/link';
 import { signOut } from 'next-auth/react';
 import { LogOut } from 'lucide-react';

@@ -4,7 +4,7 @@ import { TournamentMatch } from '@/prisma/prisma-types';
 import { Crown, Equal, Gem, Loader2, RefreshCcw, Zap } from 'lucide-react';
 import { Winner } from '@prisma/client';
 import { Card } from '@/components/ui/card';
-import { cropText } from '@/helpers/formatString';
+import { cropText } from '@/lib';
 
 type RoundRobinMatchProps = {
     match: TournamentMatch;

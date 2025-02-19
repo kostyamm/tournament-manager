@@ -9,7 +9,7 @@ import { BookOpenText } from 'lucide-react';
 import { TournamentResponse } from '@/prisma/prisma-types';
 import { useParams } from 'next/navigation';
 import { ScoreList } from '@/components/Common';
-import { formatDate } from '@/helpers/formatDate';
+import { formatDate } from '@/lib';
 import useSWR from 'swr';
 import { useBreakpoint } from '@/hooks/useBreakpoint';
 import {

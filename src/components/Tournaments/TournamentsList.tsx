@@ -3,15 +3,12 @@
 import { Card } from '@/components/ui/card';
 import { Dot } from 'lucide-react';
 import { FC } from 'react';
-import { formatString } from '@/helpers/formatString';
+import { formatString, cn, getTournamentLeaders, formatDate } from '@/lib';
 import { useSWRTournaments } from '@/services/useSWRTournaments';
 import { TournamentResponse } from '@/prisma/prisma-types';
 import { Participant, TournamentStatus } from '@prisma/client';
-import { formatDate } from '@/helpers/formatDate';
-import { getTournamentLeaders } from '@/helpers/leaders';
 import { ScoreList } from '@/components/Common';
 import { useRouter } from 'next/navigation';
-import { cn } from '@/lib/utils';
 
 type TournamentsList = { tournaments: Array<TournamentResponse> }
 

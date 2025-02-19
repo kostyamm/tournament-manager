@@ -1,5 +1,5 @@
 import Image, { ImageProps } from 'next/image';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib';
 
 // export async function getImageSize(url: string) {
 //     const response = await fetch(url);

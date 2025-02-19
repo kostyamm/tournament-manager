@@ -6,7 +6,7 @@ import { useParams } from 'next/navigation';
 import useSWR from 'swr';
 import { Card } from '@/components/ui/card';
 import { Crown } from 'lucide-react';
-import { getTournamentLeaders } from '@/helpers/leaders';
+import { getTournamentLeaders } from '@/lib';
 import { ScoreList } from '@/components/Common';
 
 export const TournamentResults = () => {

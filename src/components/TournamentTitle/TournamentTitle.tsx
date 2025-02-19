@@ -1,7 +1,7 @@
 'use client'
 
 import { TournamentResponse } from '@/prisma/prisma-types';
-import { formatString } from '@/helpers/formatString';
+import { formatString } from '@/lib';
 import { Dot } from 'lucide-react';
 import { PageTitle } from '@/components/PageTitle';
 import { useParams } from 'next/navigation';
