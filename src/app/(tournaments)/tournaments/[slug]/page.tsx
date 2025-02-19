@@ -4,14 +4,15 @@ import { TournamentResults } from '@/components/Common';
 import { RoundRobin } from '@/components/Tournaments';
 import { fetcher } from '@/services/fetcher';
 import { headers } from 'next/headers';
-import { SWRProvider } from '../../../../contexts';
+import { SWRProvider } from '@/contexts';
 import { SWRConfiguration } from 'swr';
 import { TournamentResponse } from '@/prisma/prisma-types';
 
 export default async function Tournament(props: { params: Promise<{ slug: string }> }) {
     const params = await props.params;
     const tournamentId = Number(params.slug);
-    const tournament = await fetcher<TournamentResponse>(`/tournaments/${tournamentId}`, { headers: headers() });
+    const nextHeaders = await headers()
+    const tournament = await fetcher<TournamentResponse>(`/tournaments/${tournamentId}`, { headers: nextHeaders });
 
     const providerConfig: SWRConfiguration = {
         fallback: {
