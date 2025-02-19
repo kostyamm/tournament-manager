@@ -4,7 +4,6 @@ import { Card } from '@/components/ui/card';
 import { Dot } from 'lucide-react';
 import { FC } from 'react';
 import { formatString, cn, getTournamentLeaders, formatDate } from '@/lib';
-import { useSWRTournaments } from '@/services/useSWRTournaments';
 import { TournamentResponse } from '@/prisma/prisma-types';
 import { Participant, TournamentStatus } from '@prisma/client';
 import { ScoreList } from '@/components/Common';
@@ -13,16 +12,10 @@ import { useRouter } from 'next/navigation';
 type TournamentsList = { tournaments: Array<TournamentResponse> }
 
 export const TournamentsList: FC<TournamentsList> = ({ tournaments }) => {
-    const { data } = useSWRTournaments(tournaments);
-
-    if (!data) {
-        return null;
-    }
-
     return (
         // <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8"> // default grid
         <div className="md:columns-2 xl:columns-3 gap-8 space-y-8">
-            {data.map((tournament) => <TournamentsItem key={tournament.id} {...tournament} />)}
+            {tournaments.map((tournament) => <TournamentsItem key={tournament.id} {...tournament} />)}
         </div>
     );
 };
