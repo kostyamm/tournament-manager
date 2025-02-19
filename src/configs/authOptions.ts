@@ -1,5 +1,5 @@
 import { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next';
-import { NextAuthOptions, getServerSession, Session } from 'next-auth';
+import { getServerSession, Session, NextAuthOptions, NextDefaultSession, NextDefaultJWT } from 'next-auth/next';
 import GoogleProvider from 'next-auth/providers/google';
 import { prisma } from '@/prisma/prisma-client';
 
@@ -18,10 +18,10 @@ export const authOptions: NextAuthOptions = {
         maxAge: 30 * 24 * 60 * 60,
     },
     callbacks: {
-        redirect: async ({ url, baseUrl }) => {
+        redirect: async ({ url, baseUrl }: { url: string, baseUrl: string }) => {
             return url.startsWith(baseUrl) ? url : baseUrl;
         },
-        signIn: async ({ user }) => {
+        signIn: async ({ user }: NextDefaultSession['user']) => {
             const { name, email } = user;
 
             const userData = await prisma.user.findUnique({ where: { email: email! } });
@@ -37,7 +37,7 @@ export const authOptions: NextAuthOptions = {
 
             return true;
         },
-        session: async ({ session, user, token }) => {
+        session: async ({ session, user, token }: { session: NextDefaultSession, user: Session, token: NextDefaultJWT }) => {
             const userData = await prisma.user.findUnique({
                 where: { email: session.user?.email || '' },
             });

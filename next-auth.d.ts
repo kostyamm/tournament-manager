@@ -4,15 +4,16 @@
 // NOTE: This file should not be edited
 // see https://nextjs.org/docs/app/building-your-application/configuring/typescript for more information.
 
-import type { DefaultSession } from 'next-auth';
+import type { DefaultSession, AuthOptions } from 'next-auth';
+import { DefaultJWT } from 'next-auth/src/jwt/types';
 
-declare module 'next-auth' {
+declare module 'next-auth/next' {
     /**
      * Returned by `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
      */
-    interface Session {
-        user: {
-            id: number
-        } & DefaultSession['user'];
-    }
+    type Session = { id: number } & DefaultSession['user']
+
+    type NextAuthOptions = AuthOptions
+    type NextDefaultSession = DefaultSession
+    type NextDefaultJWT = DefaultJWT
 }
