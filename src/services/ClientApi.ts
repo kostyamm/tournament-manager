@@ -22,7 +22,7 @@ const deleteTournament = async (id: string | number): Promise<TournamentResponse
     });
 };
 
-export const ClientSideApi = {
+export const ClientApi = {
     createTournament,
     updateTournamentMatch,
     deleteTournament,

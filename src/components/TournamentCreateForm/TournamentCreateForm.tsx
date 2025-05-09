@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
 import { ScoringSystem, TournamentType } from '@prisma/client';
-import { ClientSideApi } from '@/services/ClientSideApi';
+import { ClientApi } from '@/services/ClientApi';
 import { Form, FormField } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
@@ -32,7 +32,7 @@ export const TournamentCreateForm = () => {
     const isDisabled = form.formState.isSubmitting;
 
     const onSubmit = async (values: TournamentCreateSchema) => {
-        const response = await ClientSideApi.createTournament(values);
+        const response = await ClientApi.createTournament(values);
         const tournamentId = response?.tournamentId;
 
         if (!tournamentId) {

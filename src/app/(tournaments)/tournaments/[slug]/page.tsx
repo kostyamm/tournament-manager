@@ -9,14 +9,13 @@ import { SWRConfiguration } from 'swr';
 import { TournamentResponse } from '@/prisma/prisma-types';
 
 export default async function Tournament(props: { params: Promise<{ slug: string }> }) {
-    const params = await props.params;
-    const tournamentId = Number(params.slug);
+    const { slug } = await props.params;
     const nextHeaders = await headers()
-    const tournament = await fetcher<TournamentResponse>(`/tournaments/${tournamentId}`, { headers: nextHeaders });
+    const tournament = await fetcher<TournamentResponse>(`/tournaments/${slug}`, { headers: nextHeaders });
 
     const providerConfig: SWRConfiguration = {
         fallback: {
-            [`/tournaments/${tournamentId}`]: tournament,
+            [`/tournaments/${slug}`]: tournament,
         },
     };
 
