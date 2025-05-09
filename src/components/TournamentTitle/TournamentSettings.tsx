@@ -11,7 +11,7 @@ import { Settings, Trash } from 'lucide-react';
 import { TournamentResponse } from '@/prisma/prisma-types';
 import { useParams, useRouter } from 'next/navigation';
 import useSWR from 'swr';
-import { ClientSideApi } from '@/services/ClientSideApi';
+import { ClientApi } from '@/services/ClientApi';
 import { useDialog } from '@/contexts/DialogProvider';
 
 export const TournamentSettings = () => {
@@ -34,7 +34,7 @@ export const TournamentSettings = () => {
             return
         }
 
-        const deletedTournament = await ClientSideApi.deleteTournament(slug);
+        const deletedTournament = await ClientApi.deleteTournament(slug);
 
         if (!deletedTournament.id) {
             return;

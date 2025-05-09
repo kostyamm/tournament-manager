@@ -8,9 +8,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
     const body = await request.json();
 
     if (!body.winner) {
-        return Response.json({
+        return Response.json({}, {
             status: 400,
-            message: 'The "winner" field is required',
+            statusText: 'The "winner" field is required',
         });
     }
 
@@ -21,8 +21,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
 
     if (!match) {
         return Response.json(
-            { message: `Match ${slug} not found` },
-            { status: 404 },
+            {},
+            { status: 404, statusText: `Match ${slug} not found` },
         );
     }
 
@@ -59,9 +59,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
         return Response.json(result);
     } catch (error) {
         console.log(error);
-        return Response.json({
+        return Response.json({}, {
             status: 500,
-            message: 'Error in match update',
+            statusText: 'Error in match update',
         });
     }
 }

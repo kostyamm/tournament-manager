@@ -1,33 +1,34 @@
-'use client'
+'use client';
 
 import { TournamentResponse } from '@/prisma/prisma-types';
-import { formatString } from '@/lib';
-import { Dot } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import { PageTitle } from '@/components/PageTitle';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import useSWR from 'swr';
-import { TournamentSettings, TournamentStatistics } from '@/components/TournamentTitle';
+import { TournamentSettings } from '@/components/TournamentTitle';
+import { Button } from '@/components/ui/button';
+import { TournamentDescription } from '@/components/TournamentTitle/TournamentDescription';
 
 export const TournamentTitle = () => {
-    const { slug } = useParams<{ slug: string }>()
+    const router = useRouter();
+    const { slug } = useParams<{ slug: string }>();
     const { data: tournament } = useSWR<TournamentResponse>(`/tournaments/${slug}`);
 
     if (!tournament) {
-        return
+        return;
     }
 
-    const Description = () => (
-        <div className="flex items-center">
-            {formatString(tournament.type)}
-            <Dot />
-            {formatString(tournament.status)}
-        </div>
-    );
+    const { name, type, status } = tournament;
 
     return (
-        <PageTitle title={tournament.name} description={<Description />}>
+        <PageTitle
+            title={name}
+            description={<TournamentDescription type={type} status={status} />}
+        >
             <div className="flex items-center gap-2 md:gap-4 ml-auto">
-                <TournamentStatistics />
+                <Button size="iconLarge" onClick={() => router.push(`/tournaments/${slug}/preview`)}>
+                    <Eye />
+                </Button>
                 <TournamentSettings />
             </div>
         </PageTitle>

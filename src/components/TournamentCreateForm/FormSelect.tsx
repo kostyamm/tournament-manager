@@ -8,7 +8,7 @@ export const FormSelect = ({ label, defaultValue, onValueChange, options, disabl
     defaultValue: string;
     onValueChange: (value: string) => void;
     options: Array<{ key: string, label: string }>;
-    disabled: boolean;
+    disabled?: boolean;
 }) => {
     return (
         <FormItemWrapper label={label}>

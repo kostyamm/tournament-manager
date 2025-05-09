@@ -12,7 +12,7 @@ export const fetcher = async <T = unknown>(path: string, options: RequestInit = 
         const response = await fetch(url, fetchOptions);
 
         if (!response.ok) {
-            throw new Error(`Error: ${response.status} - ${response.statusText}`);
+            throw new Error(`${response.status} - ${response.statusText}`);
         }
 
         return await response.json() as T;

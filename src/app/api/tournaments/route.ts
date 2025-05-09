@@ -1,9 +1,9 @@
 import { prisma } from '@/prisma/prisma-client';
-import { generateRoundRobinMatches } from '@/prisma/prisma-actions';
 import { auth } from '@/configs/authOptions';
 import { Tournament, TournamentType } from '@prisma/client';
 import { ValidationError } from 'yup';
 import { TournamentCreateSchema, tournamentCreateSchema } from '@/app/api/tournaments/route.schema';
+import { generateRoundRobinMatches } from '@/prisma/prisma-actions';
 
 export async function GET() {
     const session = await auth();
@@ -23,6 +23,10 @@ export async function GET() {
     }
 }
 
+const AVAILABLE_TOURNAMENT_TYPES = [
+    TournamentType.ROUND_ROBIN,
+] as Array<TournamentType>
+
 export async function POST(request: Request) {
     const session = await auth();
     const creatorId = session!.user.id;
@@ -30,10 +34,10 @@ export async function POST(request: Request) {
     try {
         const body: TournamentCreateSchema = await request.json();
 
-        if (body.type !== TournamentType.ROUND_ROBIN) {
-            return Response.json({
+        if (!AVAILABLE_TOURNAMENT_TYPES.includes(body.type)) {
+            return Response.json({}, {
                 status: 400,
-                message: 'Only Round Robin tournament type is supported',
+                statusText: `Only ${AVAILABLE_TOURNAMENT_TYPES.join(', ')} tournament type is supported`
             });
         }
 
