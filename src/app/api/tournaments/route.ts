@@ -1,9 +1,13 @@
 import { prisma } from '@/prisma/prisma-client';
 import { auth } from '@/configs/authOptions';
-import { Tournament, TournamentType } from '@prisma/client';
+import { TournamentType } from '@prisma/client';
 import { ValidationError } from 'yup';
 import { TournamentCreateSchema, tournamentCreateSchema } from '@/app/api/tournaments/route.schema';
-import { generateRoundRobinMatches } from '@/prisma/prisma-actions';
+import { createTournament } from '@/prisma/helpers';
+
+const AVAILABLE_TOURNAMENT_TYPES = [
+    TournamentType.ROUND_ROBIN,
+] as Array<TournamentType>
 
 export async function GET() {
     const session = await auth();
@@ -23,10 +27,6 @@ export async function GET() {
     }
 }
 
-const AVAILABLE_TOURNAMENT_TYPES = [
-    TournamentType.ROUND_ROBIN,
-] as Array<TournamentType>
-
 export async function POST(request: Request) {
     const session = await auth();
     const creatorId = session!.user.id;
@@ -45,8 +45,6 @@ export async function POST(request: Request) {
 
         const tournament = await createTournament(body, creatorId)
 
-        await createMatches(tournament)
-
         return Response.json({ tournamentId: tournament.id });
     } catch (err) {
         console.log(err);
@@ -63,24 +61,4 @@ export async function POST(request: Request) {
 
         return new Response('fail');
     }
-}
-
-const createTournament = async (body: TournamentCreateSchema, creatorId: number): Promise<Tournament> => {
-    const { participants, name, type, scoringSystem } = body;
-
-    return prisma.$transaction(async (prisma) => {
-        const tournament = await prisma.tournament.create({
-            data: { name, creatorId, type, scoringSystem, totalParticipants: participants.length },
-        });
-
-        const participantsData = participants.map(({ name }) => ({ name, tournamentId: tournament.id }));
-        await prisma.participant.createMany({ data: participantsData });
-
-        return tournament;
-    });
-}
-
-const createMatches = async (tournament: Tournament) => {
-    const matchesData = await generateRoundRobinMatches(tournament.id);
-    await prisma.match.createMany({ data: matchesData });
 }

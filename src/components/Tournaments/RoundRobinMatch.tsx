@@ -1,14 +1,14 @@
 import { FC, Fragment, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { TournamentMatch } from '@/prisma/prisma-types';
+import { TournamentMatch, UpdateMatchBody } from '@/prisma/prisma-types';
 import { Crown, Equal, Gem, Loader2, RefreshCcw, Zap } from 'lucide-react';
-import { Winner } from '@prisma/client';
+import { Participant } from '@prisma/client';
 import { Card } from '@/components/ui/card';
 import { cropText } from '@/lib';
 
 type RoundRobinMatchProps = {
     match: TournamentMatch;
-    handleWinner: (matchId: number, winner: Winner) => Promise<void>;
+    handleWinner: (matchId: number, options: UpdateMatchBody) => Promise<void>;
 }
 export const RoundRobinMatch: FC<RoundRobinMatchProps> = ({ match, handleWinner }) => {
     return (
@@ -23,22 +23,21 @@ export const RoundRobinMatch: FC<RoundRobinMatchProps> = ({ match, handleWinner 
 };
 
 const Opponents = ({ match }: { match: TournamentMatch }) => {
-    const { opponentA, opponentB } = match;
+    const [opponentA, opponentB] = match.matchParticipants;
 
     return (
         <div className="flex items-center flex-wrap text-lg gap-2">
-            <div className="text-xl">{opponentA.name}</div>
+            <div className="text-xl">{opponentA.participant.name}</div>
             <sub className="text-foreground/60 pb-[2px]">vs</sub>
-            <div className="text-xl">{opponentB.name}</div>
+            <div className="text-xl">{opponentB.participant.name}</div>
         </div>
     );
 };
 
 const OpponentWinner = ({ match }: { match: TournamentMatch }) => {
-    const { winner } = match;
-    const isDraw = winner === Winner.Draw;
+    const { winner, isDraw } = match;
 
-    if (!winner) {
+    if (!winner && !isDraw) {
         return <div><sub className="text-foreground/60 pb-[2px]">Haven`t played yet</sub></div>;
     }
 
@@ -48,7 +47,7 @@ const OpponentWinner = ({ match }: { match: TournamentMatch }) => {
                 {isDraw ? <Gem size={18} /> : <Crown size={18} />}
             </span>
             <div className="text-xl text-primary">
-                {isDraw ? 'Draw' : `${match[winner].name}`}
+                {isDraw ? 'Draw' : `${winner?.name}`}
             </div>
             <sub className="text-foreground/60 pb-[2px]">wins</sub>
         </div>
@@ -56,22 +55,25 @@ const OpponentWinner = ({ match }: { match: TournamentMatch }) => {
 };
 
 const RoundRobinMatchActions: FC<RoundRobinMatchProps> = ({ match, handleWinner }) => {
-    const [loadingWinner, setLoadingWinner] = useState<Winner | null>();
+    const [loadingWinner, setLoadingWinner] = useState<number | null | 'draw'>();
     const [canChangeWinner, setCanChangeWinner] = useState(false);
 
-    const processWinner = async (winner: Winner) => {
-        setLoadingWinner(winner);
+    const [opponentA, opponentB] = match.matchParticipants;
 
-        await handleWinner(match.id, winner);
+    const processWinner = async (participant?: Participant) => {
+        setLoadingWinner(participant ? participant.id : 'draw');
+
+        const winnerOptions = participant ? { participant } : { draw: true }
+
+        await handleWinner(match.id, winnerOptions);
 
         setLoadingWinner(null);
         setCanChangeWinner(false);
     };
 
-    const isLoading = (winner: Winner) => loadingWinner === winner;
-    const isDisabled = (winner: Winner) => !!loadingWinner || match.winner === winner;
+    const isLoading = (participant: Participant) => loadingWinner === participant.id;
 
-    if (match.winner && !canChangeWinner) {
+    if ((match.isDraw || match.winner) && !canChangeWinner) {
         return (
             <Button
                 onClick={() => setCanChangeWinner(true)}
@@ -88,34 +90,34 @@ const RoundRobinMatchActions: FC<RoundRobinMatchProps> = ({ match, handleWinner 
         <Fragment>
             <div className="flex flex-wrap justify-between gap-2">
                 <Button
-                    disabled={isDisabled(Winner.opponentA)}
-                    onClick={() => processWinner(Winner.opponentA)}
+                    disabled={!!opponentA.isWinner}
+                    onClick={() => processWinner(opponentA.participant)}
                     variant="secondary"
                 >
-                    {isLoading(Winner.opponentA)
+                    {isLoading(opponentA.participant)
                         ? <Loader2 className="animate-spin" />
                         : <Zap />
                     }
-                    {cropText(match.opponentA.name, 9)}
+                    {cropText(opponentA.participant.name, 9)}
                 </Button>
                 <Button
-                    disabled={isDisabled(Winner.opponentB)}
-                    onClick={() => processWinner(Winner.opponentB)}
+                    disabled={!!opponentB.isWinner}
+                    onClick={() => processWinner(opponentB.participant)}
                     variant="secondary"
                 >
-                    {isLoading(Winner.opponentB)
+                    {isLoading(opponentB.participant)
                         ? <Loader2 className="animate-spin" />
                         : <Zap />
                     }
-                    {cropText(match.opponentB.name, 9)}
+                    {cropText(opponentB.participant.name, 9)}
                 </Button>
             </div>
             <Button
-                disabled={isDisabled(Winner.Draw)}
-                onClick={() => processWinner(Winner.Draw)}
+                disabled={!!match.isDraw}
+                onClick={() => processWinner()}
                 variant="outline"
             >
-                {isLoading(Winner.Draw)
+                {loadingWinner === 'draw'
                     ? <Loader2 className="animate-spin" />
                     : <Equal />
                 }

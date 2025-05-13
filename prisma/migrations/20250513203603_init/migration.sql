@@ -7,9 +7,6 @@ CREATE TYPE "TournamentStatus" AS ENUM ('PENDING', 'IN_PROGRESS', 'COMPLETED');
 -- CreateEnum
 CREATE TYPE "ScoringSystem" AS ENUM ('CLASSIC', 'CHESS', 'TWO_POINT');
 
--- CreateEnum
-CREATE TYPE "Winner" AS ENUM ('opponentA', 'opponentB', 'Draw');
-
 -- CreateTable
 CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
@@ -44,17 +41,35 @@ CREATE TABLE "Participant" (
 );
 
 -- CreateTable
+CREATE TABLE "Round" (
+    "id" SERIAL NOT NULL,
+    "number" INTEGER NOT NULL,
+    "tournamentId" INTEGER NOT NULL,
+
+    CONSTRAINT "Round_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Match" (
     "id" SERIAL NOT NULL,
     "tournamentId" INTEGER NOT NULL,
-    "opponentAId" INTEGER NOT NULL,
-    "opponentBId" INTEGER NOT NULL,
+    "roundId" INTEGER,
     "date" TIMESTAMP(3),
-    "scoreA" DOUBLE PRECISION,
-    "scoreB" DOUBLE PRECISION,
-    "winner" "Winner",
+    "winnerId" INTEGER,
+    "isDraw" BOOLEAN,
 
     CONSTRAINT "Match_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "MatchParticipant" (
+    "id" SERIAL NOT NULL,
+    "matchId" INTEGER NOT NULL,
+    "participantId" INTEGER NOT NULL,
+    "score" DOUBLE PRECISION,
+    "isWinner" BOOLEAN,
+
+    CONSTRAINT "MatchParticipant_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -67,10 +82,19 @@ ALTER TABLE "Tournament" ADD CONSTRAINT "Tournament_creatorId_fkey" FOREIGN KEY 
 ALTER TABLE "Participant" ADD CONSTRAINT "Participant_tournamentId_fkey" FOREIGN KEY ("tournamentId") REFERENCES "Tournament"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Round" ADD CONSTRAINT "Round_tournamentId_fkey" FOREIGN KEY ("tournamentId") REFERENCES "Tournament"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Match" ADD CONSTRAINT "Match_tournamentId_fkey" FOREIGN KEY ("tournamentId") REFERENCES "Tournament"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Match" ADD CONSTRAINT "Match_opponentAId_fkey" FOREIGN KEY ("opponentAId") REFERENCES "Participant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Match" ADD CONSTRAINT "Match_roundId_fkey" FOREIGN KEY ("roundId") REFERENCES "Round"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Match" ADD CONSTRAINT "Match_opponentBId_fkey" FOREIGN KEY ("opponentBId") REFERENCES "Participant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Match" ADD CONSTRAINT "Match_winnerId_fkey" FOREIGN KEY ("winnerId") REFERENCES "Participant"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "MatchParticipant" ADD CONSTRAINT "MatchParticipant_matchId_fkey" FOREIGN KEY ("matchId") REFERENCES "Match"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "MatchParticipant" ADD CONSTRAINT "MatchParticipant_participantId_fkey" FOREIGN KEY ("participantId") REFERENCES "Participant"("id") ON DELETE CASCADE ON UPDATE CASCADE;

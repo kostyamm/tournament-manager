@@ -33,12 +33,6 @@ enum ScoringSystem {
   TWO_POINT
 }
 
-enum Winner {
-  opponentA
-  opponentB
-  Draw
-}
-
 model User {
   id          Int          @id @default(autoincrement())
   name        String
@@ -56,30 +50,55 @@ model Tournament {
   creator           User             @relation(fields: [creatorId], references: [id])
   creatorId         Int
   totalParticipants Int
+
   participants      Participant[]
+  rounds            Round[]
   matches           Match[]
 }
 
 model Participant {
-  id           Int        @id @default(autoincrement())
+  id           Int               @id @default(autoincrement())
   name         String
-  score        Float      @default(0)
-  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  score        Float             @default(0)
+  tournament   Tournament        @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId Int
-  matchesAsA   Match[]    @relation("OpponentA")
-  matchesAsB   Match[]    @relation("OpponentB")
+
+  matchEntries MatchParticipant[]
+  wonMatches   Match[]           @relation("MatchWinner")
+}
+
+model Round {
+  id           Int         @id @default(autoincrement())
+  number       Int
+  tournament   Tournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  tournamentId Int
+
+  matches      Match[]
 }
 
 model Match {
-  id           Int         @id @default(autoincrement())
-  tournament   Tournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  id           Int                @id @default(autoincrement())
+  tournament   Tournament         @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId Int
-  opponentA    Participant @relation("OpponentA", fields: [opponentAId], references: [id])
-  opponentAId  Int
-  opponentB    Participant @relation("OpponentB", fields: [opponentBId], references: [id])
-  opponentBId  Int
+  round        Round?             @relation(fields: [roundId], references: [id])
+  roundId      Int?
   date         DateTime?
-  scoreA       Float?
-  scoreB       Float?
-  winner       Winner?
+
+  matchParticipants MatchParticipant[]
+
+  winnerId     Int?
+  winner       Participant?       @relation("MatchWinner", fields: [winnerId], references: [id])
+  isDraw       Boolean?
+}
+
+model MatchParticipant {
+  id            Int          @id @default(autoincrement())
+
+  match         Match        @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  matchId       Int
+  participant   Participant  @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  participantId Int
+
+  score         Float?
+  isWinner      Boolean?
 }

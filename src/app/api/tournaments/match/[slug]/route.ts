@@ -1,22 +1,26 @@
 import { getTournamentById } from '@/prisma/prisma-actions';
 import { prisma } from '@/prisma/prisma-client';
-import { Match, ScoringSystem, TournamentStatus, Winner } from '@prisma/client';
+import { Match, MatchParticipant, Participant, ScoringSystem, Tournament, TournamentStatus } from '@prisma/client';
+import { UpdateMatchBody } from '@/prisma/prisma-types';
 
 export async function POST(request: Request, { params }: { params: Promise<{ slug: string }> }) {
     const slug = (await params).slug;
     const matchId = Number(slug);
-    const body = await request.json();
+    const body = await request.json() as UpdateMatchBody;
 
-    if (!body.winner) {
+    if (!body.participant && !body.draw) {
         return Response.json({}, {
             status: 400,
-            statusText: 'The "winner" field is required',
+            statusText: 'The "participant" or "draw" field is required',
         });
     }
 
     const match = await prisma.match.findUnique({
         where: { id: matchId },
-        include: { opponentA: true, opponentB: true, tournament: true },
+        include: {
+            matchParticipants: { include: { participant: true } },
+            tournament: true,
+        },
     });
 
     if (!match) {
@@ -27,32 +31,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
     }
 
     try {
-        const tournamentStatus = await getTournamentStatus(match);
-        const { scoreA, scoreB } = getScores(body.winner, match.tournament.scoringSystem);
-
-        const opponentAScore = match.opponentA.score - (match.scoreA || 0) + scoreA
-        const opponentBScore = match.opponentB.score - (match.scoreB || 0) + scoreB
-
-        await prisma.match.update({
-            where: { id: matchId },
-            include: { opponentA: true, opponentB: true },
-            data: {
-                scoreA,
-                scoreB,
-                winner: body.winner,
-                opponentA: {
-                    update: { score: opponentAScore },
-                },
-                opponentB: {
-                    update: { score: opponentBScore },
-                },
-                tournament: {
-                    update: {
-                        status: tournamentStatus,
-                    },
-                },
-            },
+        const updates = await getMatchUpdates({
+            match,
+            winnerId: body.participant?.id,
+            isDraw: body.draw === true
         });
+
+        await prisma.$transaction(updates);
 
         const result = await getTournamentById(match.tournamentId);
 
@@ -66,38 +51,107 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
     }
 }
 
-const getTournamentStatus = async (match: Match) => {
-    const matches = await prisma.match.findMany({ where: { tournamentId: match.tournamentId } });
+const getMatchUpdates = async ({ match, winnerId, isDraw }: {
+    match: Match & {
+        tournament: Tournament;
+        matchParticipants: Array<MatchParticipant & { participant: Participant }>
+    };
+    winnerId?: number;
+    isDraw: boolean;
+}) => {
+    const tournamentStatus = await getTournamentStatus({
+        tournamentId: match.tournamentId,
+        updatedMatch: {
+            id: match.id,
+            winnerId,
+            isDraw,
+        },
+    });
 
-    const playedMatches = matches.filter(({ winner }) => !!winner);
-    const incrementCurrentMatch = !match.winner ? 1 : 0;
-    const isCompleted = (playedMatches.length + incrementCurrentMatch) >= matches.length;
+    const updates = [];
 
-    return isCompleted ? TournamentStatus.COMPLETED : TournamentStatus.IN_PROGRESS;
+    match.matchParticipants.forEach((mp) => {
+        const isWinner = !isDraw && mp.participantId === winnerId;
+        const scoreDelta = getScoreDelta({ isDraw, isWinner, scoringSystem: match.tournament.scoringSystem });
+
+        const previousScore = mp.score ?? 0;
+        const participantPrevScore = mp.participant.score;
+
+        const updatedParticipantScore = participantPrevScore - previousScore + scoreDelta;
+
+        updates.push(
+            prisma.matchParticipant.update({
+                where: { id: mp.id },
+                data: { score: scoreDelta, isWinner },
+            }),
+            prisma.participant.update({
+                where: { id: mp.participantId },
+                data: { score: updatedParticipantScore },
+            }),
+        );
+    });
+
+    updates.push(
+        prisma.match.update({
+            where: { id: match.id },
+            data: { winnerId, isDraw },
+        })
+    );
+
+    updates.push(
+        prisma.tournament.update({
+            where: { id: match.tournamentId },
+            data: { status: tournamentStatus },
+        })
+    );
+
+    return updates;
 };
 
-const getScores = (winner: Winner, scoringSystem: ScoringSystem): { scoreA: number, scoreB: number } => {
-    const oppositeOpponent = winner === Winner.opponentA ? Winner.opponentB : Winner.opponentA;
-    const { victory, defeat, draw } = ScoreMap[scoringSystem];
+const getTournamentStatus = async ({
+    tournamentId,
+    updatedMatch,
+}: {
+    tournamentId: number;
+    updatedMatch: { id: number; winnerId?: number; isDraw?: boolean };
+}): Promise<TournamentStatus> => {
+    const matches = await prisma.match.findMany({
+        where: { tournamentId },
+        select: {
+            id: true,
+            winnerId: true,
+            isDraw: true,
+        },
+    });
 
-    if (winner === Winner.Draw) {
-        return {
-            scoreA: draw,
-            scoreB: draw,
-        };
-    }
+    const total = matches.length;
 
-    const scores = {
-        [Winner.opponentA]: victory,
-        [Winner.opponentB]: victory,
-    };
+    const played = matches.reduce((count, match) => {
+        const isCurrent = match.id === updatedMatch.id;
 
-    scores[oppositeOpponent] = defeat;
+        const winnerId = isCurrent ? updatedMatch.winnerId : match.winnerId;
 
-    return {
-        scoreA: scores[Winner.opponentA],
-        scoreB: scores[Winner.opponentB],
-    };
+        const isDraw = isCurrent ? updatedMatch.isDraw : match.isDraw;
+
+        return count + (winnerId !== null || isDraw === true ? 1 : 0);
+    }, 0);
+
+    return played >= total ? TournamentStatus.COMPLETED : TournamentStatus.IN_PROGRESS;
+};
+
+const getScoreDelta = ({
+    isDraw,
+    isWinner,
+    scoringSystem,
+}: {
+    isDraw: boolean;
+    isWinner: boolean;
+    scoringSystem: ScoringSystem;
+}) => {
+    const scoring = ScoreMap[scoringSystem];
+
+    if (isDraw) return scoring.draw;
+    return isWinner ? scoring.victory : scoring.defeat;
 };
 
 const ScoreMap: { [key in ScoringSystem]: { victory: number, defeat: number, draw: number } } = {

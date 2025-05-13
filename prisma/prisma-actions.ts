@@ -19,28 +19,16 @@ export const getTournamentById: GetTournamentById = async (tournamentId) => {
             },
             matches: {
                 orderBy: { id: 'asc' },
-                include: { opponentA: true, opponentB: true },
+                include: {
+                    matchParticipants: {
+                        include: {
+                            participant: true,
+                        },
+                    },
+                    winner: true,
+                    round: true,
+                },
             },
         },
     });
-};
-
-export const generateRoundRobinMatches = async (tournamentId: number) => {
-    const allParticipants = await prisma.participant.findMany({
-        where: { tournamentId },
-    });
-
-    const matchesData = [];
-    for (let i = 0; i < allParticipants.length; i++) {
-        for (let j = i + 1; j < allParticipants.length; j++) {
-            matchesData.push({
-                tournamentId: tournamentId,
-                opponentAId: allParticipants[i].id,
-                opponentBId: allParticipants[j].id,
-                date: new Date(),
-            });
-        }
-    }
-
-    return matchesData;
 };
