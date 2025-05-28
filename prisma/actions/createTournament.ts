@@ -1,7 +1,8 @@
 import { TournamentCreateSchema } from '@/app/api/tournaments/route.schema';
 import { Tournament, TournamentType } from '@prisma/client';
 import { prisma } from '@/prisma/prisma-client';
-import { createRoundRobinMatches } from '@/prisma/helpers/createRoundRobinMatches';
+import { createRoundRobinMatches } from '@/prisma/actions/createRoundRobinMatches';
+import { createSingleEliminationMatches } from '@/prisma/actions/createSingleEliminationMatches';
 
 export const createTournament = async (body: TournamentCreateSchema, creatorId: number): Promise<Tournament> => {
     const { participants, name, type, scoringSystem } = body;
@@ -19,9 +20,9 @@ export const createTournament = async (body: TournamentCreateSchema, creatorId: 
                 await createRoundRobinMatches(tx, tournament.id);
                 break;
 
-            // case TournamentType.SINGLE_ELIMINATION:
-            //     await createSingleEliminationMatches(tx, tournament.id);
-            //     break;
+            case TournamentType.SINGLE_ELIMINATION:
+                await createSingleEliminationMatches(tx, tournament.id);
+                break;
 
             default:
                 throw new Error(`Tournament type ${type} is not supported yet`);

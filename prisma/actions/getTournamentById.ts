@@ -1,6 +1,6 @@
-import { prisma } from '@/prisma/prisma-client';
 import { GetTournamentById } from '@/prisma/prisma-types';
 import { auth } from '@/configs/authOptions';
+import { prisma } from '@/prisma/prisma-client';
 
 export const getTournamentById: GetTournamentById = async (tournamentId) => {
     const session = await auth();

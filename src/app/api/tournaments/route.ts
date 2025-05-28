@@ -1,13 +1,9 @@
 import { prisma } from '@/prisma/prisma-client';
 import { auth } from '@/configs/authOptions';
-import { TournamentType } from '@prisma/client';
 import { ValidationError } from 'yup';
 import { TournamentCreateSchema, tournamentCreateSchema } from '@/app/api/tournaments/route.schema';
-import { createTournament } from '@/prisma/helpers';
-
-const AVAILABLE_TOURNAMENT_TYPES = [
-    TournamentType.ROUND_ROBIN,
-] as Array<TournamentType>
+import { AVAILABLE_TOURNAMENT_TYPES } from '@/constants/options';
+import { createTournament } from '@/prisma/actions';
 
 export async function GET() {
     const session = await auth();
@@ -30,6 +26,14 @@ export async function GET() {
 export async function POST(request: Request) {
     const session = await auth();
     const creatorId = session!.user.id;
+
+    if (!creatorId) {
+        console.error('User id is missing');
+        return Response.json({}, {
+            status: 401,
+            statusText: 'Unauthorized',
+        });
+    }
 
     try {
         const body: TournamentCreateSchema = await request.json();

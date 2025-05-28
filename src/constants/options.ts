@@ -8,13 +8,12 @@ export const TOURNAMENT_TYPES = [
     { key: TournamentType.FREE_FOR_ALL, label: 'Free-for-all' },
 ];
 
-export const AVAILABLE_TOURNAMENT_TYPES = TOURNAMENT_TYPES.filter(({key}) => {
-    const AVAILABLE_TYPES = [
-        TournamentType.ROUND_ROBIN,
-    ] as Array<TournamentType>
+export const AVAILABLE_TOURNAMENT_TYPES = [
+    TournamentType.ROUND_ROBIN,
+    TournamentType.SINGLE_ELIMINATION,
+] as Array<TournamentType>;
 
-    return AVAILABLE_TYPES.includes(key)
-})
+export const AVAILABLE_TOURNAMENT_OPTIONS = TOURNAMENT_TYPES.filter(({ key }) => AVAILABLE_TOURNAMENT_TYPES.includes(key));
 
 export const SCORING_SYSTEM = [
     { key: ScoringSystem.CLASSIC, label: 'Classic system (3-1-0)' },

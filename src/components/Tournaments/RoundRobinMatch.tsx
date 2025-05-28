@@ -55,17 +55,24 @@ const OpponentWinner = ({ match }: { match: TournamentMatch }) => {
 };
 
 const RoundRobinMatchActions: FC<RoundRobinMatchProps> = ({ match, handleWinner }) => {
-    const [loadingWinner, setLoadingWinner] = useState<number | null | 'draw'>();
+    const [loadingWinner, setLoadingWinner] = useState<number | null | 'draw'>(null);
     const [canChangeWinner, setCanChangeWinner] = useState(false);
 
     const [opponentA, opponentB] = match.matchParticipants;
 
-    const processWinner = async (participant?: Participant) => {
-        setLoadingWinner(participant ? participant.id : 'draw');
+    const processWinner = async (participant: Participant) => {
+        setLoadingWinner(participant.id);
 
-        const winnerOptions = participant ? { participant } : { draw: true }
+        await handleWinner(match.id, { participant });
 
-        await handleWinner(match.id, winnerOptions);
+        setLoadingWinner(null);
+        setCanChangeWinner(false);
+    };
+
+    const processDraw = async () => {
+        setLoadingWinner('draw');
+
+        await handleWinner(match.id, { draw: true });
 
         setLoadingWinner(null);
         setCanChangeWinner(false);
@@ -114,7 +121,7 @@ const RoundRobinMatchActions: FC<RoundRobinMatchProps> = ({ match, handleWinner 
             </div>
             <Button
                 disabled={!!match.isDraw}
-                onClick={() => processWinner()}
+                onClick={() => processDraw()}
                 variant="outline"
             >
                 {loadingWinner === 'draw'

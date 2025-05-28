@@ -25,8 +25,8 @@ export const TournamentTitle = () => {
             title={name}
             description={<TournamentDescription type={type} status={status} />}
         >
-            <div className="flex items-center gap-2 md:gap-4 ml-auto">
-                <Button size="iconLarge" onClick={() => router.push(`/tournaments/${slug}/preview`)}>
+            <div className="flex items-center gap-2 ml-auto">
+                <Button variant="outline" size="iconLarge" onClick={() => router.push(`/tournaments/${slug}/preview`)}>
                     <Eye />
                 </Button>
                 <TournamentSettings />

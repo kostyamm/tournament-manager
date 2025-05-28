@@ -1,1 +1,2 @@
-export * from './createTournament'
+export * from './getMatchScore'
+export * from './getTournamentStatus'

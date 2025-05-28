@@ -12,6 +12,7 @@ import { TournamentType } from '@prisma/client';
 
 const TOURNAMENT_MAP: Partial<Record<TournamentType, ComponentType<object>>> = {
     [TournamentType.ROUND_ROBIN]: dynamic(() => import('@/components/Tournaments').then(mod => mod.RoundRobin)),
+    [TournamentType.SINGLE_ELIMINATION]: dynamic(() => import('@/components/Tournaments').then(mod => mod.SingleElimination)),
 }
 
 export default async function Tournament(props: { params: Promise<{ slug: string }> }) {

@@ -10,7 +10,7 @@ import { ClientApi } from '@/services/ClientApi';
 import { Form, FormField } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
-import { AVAILABLE_TOURNAMENT_TYPES, SCORING_SYSTEM } from '@/constants/options';
+import { AVAILABLE_TOURNAMENT_OPTIONS, SCORING_SYSTEM } from '@/constants/options';
 import { FormParticipants } from '@/components/TournamentCreateForm/FormParticipants';
 import { FormSelect } from '@/components/TournamentCreateForm/FormSelect';
 import { FormItemWrapper } from '@/components/TournamentCreateForm/FormItemWrapper';
@@ -71,7 +71,7 @@ export const TournamentCreateForm = () => {
                                     placeholder="Select type"
                                     onValueChange={field.onChange}
                                     defaultValue={field.value}
-                                    options={AVAILABLE_TOURNAMENT_TYPES}
+                                    options={AVAILABLE_TOURNAMENT_OPTIONS}
                                 />
                             )}
                         />

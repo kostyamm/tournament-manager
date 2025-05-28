@@ -1,6 +1,6 @@
-import { getTournamentById } from '@/prisma/prisma-actions';
 import { prisma } from '@/prisma/prisma-client';
 import { auth } from '@/configs/authOptions';
+import { getTournamentById } from '@/prisma/actions';
 
 export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
     const slug = (await params).slug
